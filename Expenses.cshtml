@@ -16,8 +16,8 @@
          MoreInfo=Request["formMoreInfo"];
 
          UserId= WebSecurity.CurrentUserId;
-         var SQLINSERT = "INSERT INTO Expense (DateTime, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, UserId)";
-         var db = Database.Open("Expense");
+         var SQLINSERT = "INSERT INTO Expense (DateTime, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4)";
+         var db = Database.Open("StarterSite");
          db.Execute(SQLINSERT, DateTime, Category, Price, MoreInfo, UserId);
        }
      }
