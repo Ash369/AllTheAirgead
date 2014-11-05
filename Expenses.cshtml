@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Expenses";
+}
+
+ @{
+     var DateTime="";
+     var Category="";
+     var Price="";
+     var MoreInfo="";
+     int UserId;
+       if(IsPost){
+         DateTime=Request["formDateTime"];
+         Category=Request["formCategory"];
+         Price=Request["formPrice"];
+         MoreInfo=Request["formMoreInfo"];
+
+         UserId= WebSecurity.CurrentUserId;
+         var SQLINSERT = "INSERT INTO Expense (DateTime, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4)";
+         var db = Database.Open("StarterSite");
+         db.Execute(SQLINSERT, DateTime, Category, Price, MoreInfo, UserId);
+       }
+     }
+
+<hgroup class="title">
+    <h1>@Page.Title.</h1>
+    <h2>This is where you can add a new expense.</h2>
+</hgroup>
+
+     <h1>Add a new expense</h1>
+       <form action="" method="post">
+         <p>Date and Time: <input type="text" name="formDateTime" /></p>
+         <p>Category: <input type="text" name="formCategory" /></p>
+         <p>Price: <input type="text" name="formPrice" /></p>
+         <p>MoreInfo: <input type="text" name="formMoreInfo" /></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form>
+
+<aside>
+    <h3>Aside Title</h3>
+    <ul>
+        <li><a href="~/">Home</a></li>
+        <li><a href="~/Expenses">Expenses</a></li>
+        <li><a href="~/Contact">Contact</a></li>
+    </ul>
+</aside>
