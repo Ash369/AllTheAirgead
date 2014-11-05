@@ -7,8 +7,6 @@
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
     var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC";
-    Layout = "~/_SiteLayout.cshtml";
-    Page.Title = "Charts";
 
  }
 <!DOCTYPE html>
@@ -25,6 +23,7 @@
  </head>
  <body>
    <h1>Charts</h1>
+
    <table>
        <thead>
            <tr>
