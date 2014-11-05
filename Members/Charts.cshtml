@@ -3,10 +3,10 @@
         Response.Redirect("~/Account/Login?returnUrl="
             + Request.Url.LocalPath);
     }
-    var UserIdCurrent=0;
-    UserIdCurrent= WebSecurity.CurrentUserId;
+    
     var db = Database.Open("StarterSite");
-    var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = UserIdCurrent ORDER BY DateTime";
+    var CurrentUserId = WebSecurity.CurrentUserId;
+    var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC";
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Charts";
 
