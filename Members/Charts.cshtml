@@ -3,18 +3,47 @@
         Response.Redirect("~/Account/Login?returnUrl="
             + Request.Url.LocalPath);
     }
+    var UserIdCurrent=0;
+    UserIdCurrent= WebSecurity.CurrentUserId;
+    var db = Database.Open("StarterSite");
+    var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = UserIdCurrent ORDER BY DateTime";
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Charts";
-}
 
+ }
 <!DOCTYPE html>
-
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Charts</title>
-    </head>
-    <body>
-        
-    </body>
+<html>
+ <head>
+   <title>Charts</title>
+   <style>
+       table, th, td {
+         border: solid 1px #bbbbbb;
+         border-collapse: collapse;
+         padding: 2px;
+       }
+    </style>
+ </head>
+ <body>
+   <h1>Charts</h1>
+   <table>
+       <thead>
+           <tr>
+               <th>Date and Time</th>
+               <th>Category</th>
+               <th>Price</th>
+               <th>More Info</th>
+           </tr>
+       </thead>
+       <tbody>
+           @foreach(var row in db.Query(selectQueryString)){
+            <tr>
+                   <td>@row.DateTime</td>
+                   <td>@row.Category</td>
+                   <td>@row.Price</td>
+                   <td>@row.MoreInfo</td>
+            </tr>
+           }
+       </tbody>
+   </table>
+ </body>
 </html>
