@@ -1,0 +1,11 @@
+﻿@{
+    var db = Database.Open("StarterSite");
+    var CurrentUserId = WebSecurity.CurrentUserId;
+    var data = db.Query("SELECT  Category, Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC");
+    var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Vanilla)
+        .AddTitle("Product Costs")
+	   .AddSeries("Default", 
+             xValue: data, xField: "Category",
+             yValues: data, yFields: "Price")	
+        .Write();
+}
