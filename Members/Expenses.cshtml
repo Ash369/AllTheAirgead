@@ -13,16 +13,21 @@
      var Price="";
      var MoreInfo="";
      int UserId;
+     UserId= WebSecurity.CurrentUserId;
+     var db1 = Database.Open("StarterSite");
+     var SelectQueryString = ("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @UserId);
+
+     var SelectedData = db1.Query(SelectQueryString);
        if(IsPost){
          DateTime=Request["formDateTime"];
-         Category=Request["formCategory"];
+         Category=Request["row.Category"];
          Price=Request["formPrice"];
          MoreInfo=Request["formMoreInfo"];
 
-         UserId= WebSecurity.CurrentUserId;
+         
          var SQLINSERT = "INSERT INTO Expense (DateTime, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4)";
-         var db = Database.Open("StarterSite");
-         db.Execute(SQLINSERT, DateTime, Category, Price, MoreInfo, UserId);
+
+         db1.Execute(SQLINSERT, DateTime, Category, Price, MoreInfo, UserId);
        }
      }
 
@@ -30,11 +35,18 @@
     <h1>@Page.Title.</h1>
     <h2>This is where you can add a new expense.</h2>
 </hgroup>
-
+<body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date and Time: <input type="text" name="formDateTime" /></p>
-         <p>Category: <input type="text" name="formCategory" /></p>
+         <p>Date and Time: <input type="datetime-local" name="formDateTime" /></p>
+         <p>Category:
+             <select name="mylist">
+                 @foreach(var row in @SelectedData)
+                 {
+                     <option value="@row.Category">@row.Category</option>
+                 }
+                 <option value="Create">Create new category...</option>
+             </select></p>
          <p>Price: <input type="text" name="formPrice" /></p>
          <p>MoreInfo: <input type="text" name="formMoreInfo" /></p>
          <p><input type="submit" value="Enter" /></p>
@@ -48,3 +60,4 @@
         <li><a href="~/Contact">Contact</a></li>
     </ul>
 </aside>
+</body>
