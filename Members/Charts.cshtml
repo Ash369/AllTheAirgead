@@ -8,6 +8,9 @@
     var CurrentUserId = WebSecurity.CurrentUserId;
     var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC";
 
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Charts";
+
  }
 <!DOCTYPE html>
 <html>
