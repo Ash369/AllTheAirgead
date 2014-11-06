@@ -1,11 +1,16 @@
 ﻿@{
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT  Category, Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC");
+    var data = db.Query("SELECT Category, DateTime Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC");
+    IEnumerable<string> distinctCategory = data.Distinct(Category);
     var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Vanilla)
-        .AddTitle("Product Costs")
-	   .AddSeries("Default", 
-             xValue: data, xField: "Category",
-             yValues: data, yFields: "Price")	
-        .Write();
+        .AddTitle("Product Costs");
+            foreach (int element in distinctCategory)
+            {
+                mychart.AddSeries("Category", 
+                    xValue: data, xField: "DateTime",
+                    yValues: data, yFields: "Price");
+            }
+
+        myChart.Write();
 }
