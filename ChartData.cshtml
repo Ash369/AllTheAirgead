@@ -1,26 +1,28 @@
 ﻿@{
+   
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT Category, Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY Date DESC, Time DESC");
-    var DinCat = db.Query("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @CurrentUserId);
-    <!--var categories = data.Select("Category");-->
-    int MaxlenTot = DinCat.Category.Length;
-    int Maxlen = Data.Category.Length;
+    var Data = db.Query("SELECT Category, Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY Date DESC, Time DESC");
+    var DistinctCat = db.Query("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @CurrentUserId);
+    <!--var DinCat = data.Select("Category");-->
+    int MaxlenTot = DistinctCat.Count();
+    int Maxlen = Data.Count();
     int[] TotPrice = new int[Maxlen];
-    for(i = 0; i < MaxlenTot; i++)
-    {
-	    for(j = 0; j < Maxlen ; j++)
-	    { 
-		    if(DinCat.Category[j] = Data.Category[j])
-		    {
-			    TotPrice[j] = TotPrice[j] + Data.Price[j];		
-		    }
-	    }
-    }
+     foreach(var row in @DistinctCat)
+        {
+            foreach(var row2 in @Data)
+	         { 
+		        if(row.Category == row2.Category)
+		         {
+                    int SuPr = Convert.ToInt16(row2.Price);
+			        TotPrice[row] = TotPrice[row] + row2.Price;		
+		         }
+	         }
+         }
     var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Vanilla)
         .AddTitle("Product Costs")
         .AddSeries("Default", 
-            xValue: DinCat, xField: "Category",
-            yValues: data, yFields: "Price")
+            xValue: DistinctCat, xField: "Category",
+            yValues: TotPrice, yFields: "TotPrice")
         .Write();
 }
