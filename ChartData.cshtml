@@ -1,13 +1,26 @@
 ﻿@{
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT Category, DateTime Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC");
-    var Categories=db.Query("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @CurrentUserId);
+    var data = db.Query("SELECT Category, Price FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY Date DESC, Time DESC");
+    var DinCat = db.Query("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @CurrentUserId);
     <!--var categories = data.Select("Category");-->
+    int MaxlenTot = DinCat.Category.Length;
+    int Maxlen = Data.Category.Length;
+    int[] TotPrice = new int[Maxlen];
+    for(i = 0; i < MaxlenTot; i++)
+    {
+	    for(j = 0; j < Maxlen ; j++)
+	    { 
+		    if(DinCat.Category[j] = Data.Category[j])
+		    {
+			    TotPrice[j] = TotPrice[j] + Data.Price[j];		
+		    }
+	    }
+    }
     var myChart = new Chart(width: 600, height: 400, theme: ChartTheme.Vanilla)
         .AddTitle("Product Costs")
-        .AddSeries("Categories", 
-            xValue: data, xField: "DateTime",
+        .AddSeries("Default", 
+            xValue: DinCat, xField: "Category",
             yValues: data, yFields: "Price")
         .Write();
 }
