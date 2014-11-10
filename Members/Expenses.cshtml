@@ -8,10 +8,12 @@
 }
 
  @{
-     var DateTime="";
+     var Date="";
+     var Time="";
      var Category="";
      var Price="";
      var MoreInfo="";
+     
      int UserId;
      UserId= WebSecurity.CurrentUserId;
      var db1 = Database.Open("StarterSite");
@@ -19,15 +21,16 @@
 
      var SelectedData = db1.Query(SelectQueryString);
        if(IsPost){
-         DateTime=Request["formDateTime"];
+         Date=Request["formDate"];
+         Time=Request["formTime"];
          Category=Request["row.Category"];
          Price=Request["formPrice"];
          MoreInfo=Request["formMoreInfo"];
 
          
-         var SQLINSERT = "INSERT INTO Expense (DateTime, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4)";
+         var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4, @5)";
 
-         db1.Execute(SQLINSERT, DateTime, Category, Price, MoreInfo, UserId);
+         db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, UserId);
        }
      }
 
@@ -38,7 +41,8 @@
 <body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date and Time: <input type="datetime-local" name="formDateTime" /></p>
+         <p>Date: <input type="date" name="formDate" /></p>
+         <p>Time: <input type="time" name="formTime" /></p>
          <p>Category:
              <select name="mylist">
                  @foreach(var row in @SelectedData)
