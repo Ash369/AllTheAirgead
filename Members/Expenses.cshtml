@@ -17,9 +17,10 @@
      int UserId;
      UserId= WebSecurity.CurrentUserId;
      var db1 = Database.Open("StarterSite");
-     var SelectQueryString = ("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @UserId);
+     var SelectUserCategories = ("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @UserId + "UNION SELECT CategoryName FROM Catagories");
+     <!--var SelectDefaultCategories = ("SELECT CategoryName FROM Categories");-->
 
-     var SelectedData = db1.Query(SelectQueryString);
+     var SelectedData = db1.Query(SelectUserCategories);
        if(IsPost){
          Date=Request["formDate"];
          Time=Request["formTime"];
@@ -49,7 +50,7 @@
                  {
                      <option value="@row.Category">@row.Category</option>
                  }
-                 <option value="Create">Create new category...</option>
+                 <!--<option value="Create">Create new category...</option>-->
              </select></p>
          <p>Price: <input type="text" name="formPrice" /></p>
          <p>MoreInfo: <input type="text" name="formMoreInfo" /></p>
