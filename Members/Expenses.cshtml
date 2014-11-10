@@ -24,7 +24,7 @@
        if(IsPost){
          Date=Request["formDate"];
          Time=Request["formTime"];
-         Category=Request["row.Category"];
+         Category=Request["formCategory"];
          Price=Request["formPrice"];
          MoreInfo=Request["formMoreInfo"];
 
@@ -32,6 +32,7 @@
          var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4, @5)";
 
          db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, UserId);
+         Response.Redirect("~/Members/Charts");
        }
      }
 
@@ -45,7 +46,7 @@
          <p>Date: <input type="date" name="formDate" /></p>
          <p>Time: <input type="time" name="formTime" /></p>
          <p>Category:
-             <select name="mylist">
+             <select name="formCategory">
                  @foreach(var row in @SelectedData)
                  {
                      <option value="@row.Category">@row.Category</option>
