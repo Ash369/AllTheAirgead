@@ -13,6 +13,7 @@
      var Category="";
      var Price="";
      var MoreInfo="";
+     var Priority="";
      
      int UserId;
      UserId= WebSecurity.CurrentUserId;
@@ -27,9 +28,10 @@
          Category=Request["formCategory"];
          Price=Request["formPrice"];
          MoreInfo=Request["formMoreInfo"];
+         Priority=Request["formPriority"];
 
          
-         var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, UserId) VALUES (@0, @1, @2, @3, @4, @5)";
+         var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, Priority, UserId) VALUES (@0, @1, @2, @3, @4, @5,@6)";
 
          db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, UserId);
          Response.Redirect("~/Members/Charts");
@@ -51,19 +53,30 @@
                  {
                      <option value="@row.Category">@row.Category</option>
                  }
-                 <!--<option value="Create">Create new category...</option>-->
+                 <option value="Create">Create new category...</option>
+             </select></p>
+         @{if(Request["formCategory"]=="Create")
+            {
+                <input type="text" name="formCategory">
+            }
+         }
+         <p>Priority:
+             <select name="formPriority">
+                 <option value="3">Low</option>
+                 <option value="2" selected >Medium</option>
+                 <option value="1">High</option>
              </select></p>
          <p>Price: <input type="text" name="formPrice" /></p>
          <p>MoreInfo: <input type="text" name="formMoreInfo" /></p>
          <p><input type="submit" value="Enter" /></p>
      </form>
 
-<aside>
+<section>
     <h3>Aside Title</h3>
     <ul>
         <li><a href="~/">Home</a></li>
         <li><a href="~/Members/Expenses">Expenses</a></li>
         <li><a href="~/Contact">Contact</a></li>
     </ul>
-</aside>
+</section>
 </body>

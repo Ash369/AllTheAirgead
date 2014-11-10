@@ -4,9 +4,13 @@
             + Request.Url.LocalPath);
     }
     
+    string[] TotalPrices = new string[3];
     var db = Database.Open("StarterSite");
-    var CurrentUserId = WebSecurity.CurrentUserId;
-    var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY Date DESC, Time DESC";
+    var UserId = WebSecurity.CurrentUserId;
+    var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @UserId + " ORDER BY Date DESC, Time DESC";
+    var SelectUserCategories = ("SELECT DISTINCT Category FROM Expense, Catagories WHERE UserId = " + @UserId + "SELECT CategoryName FROM Catagories");
+    
+
 
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Charts";
@@ -46,6 +50,27 @@
                    <td>@row.Price</td>
                    <td>@row.MoreInfo</td>
             </tr>
+           }
+       </tbody>
+   </table>
+
+     <table>
+       <thead>
+           <tr>
+               @foreach(var row in db.Query(selectQueryString)){
+
+                <th>row.Category</th>
+           }
+               </tr>
+       </thead>
+       <tbody>
+           @foreach(var row in db.Query(SelectUserCategories)){
+            foreach(var row2 in db.Query(selectQueryString)){
+                if(row.Category==row2.Category)
+                {
+                    TotalPrices[row] = "SELECT SUM(Price) AS TotalPrice FROM Expense WHERE Category = " + row.Category;
+                }
+            }
            }
        </tbody>
    </table>
