@@ -6,7 +6,7 @@
     
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var selectQueryString = "SELECT DateTime, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC";
+    var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @CurrentUserId + " ORDER BY DateTime DESC";
 
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Charts";
@@ -30,7 +30,8 @@
    <table>
        <thead>
            <tr>
-               <th>Date and Time</th>
+               <th>Date</th>
+               <th>Time</th>
                <th>Category</th>
                <th>Price</th>
                <th>More Info</th>
@@ -39,7 +40,8 @@
        <tbody>
            @foreach(var row in db.Query(selectQueryString)){
             <tr>
-                   <td>@row.DateTime</td>
+                   <td>@row.Date</td>
+                   <td>@row.Time</td>
                    <td>@row.Category</td>
                    <td>@row.Price</td>
                    <td>@row.MoreInfo</td>
