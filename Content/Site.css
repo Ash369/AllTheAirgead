@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: #fff;
+    background-color: #e2e2e2;
     border-top: solid 10px #000;
     color: #333;
     font-size: .85em;
@@ -115,6 +115,7 @@ h5, h6 {
     }
 
 header .content-wrapper {
+    background-color: #e2e2e2;
     padding-top: 20px; 
 }
 
