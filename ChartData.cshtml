@@ -2,15 +2,14 @@
    
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT Category, SUM(Price) FROM Expense WHERE UserId = " + @CurrentUserId + "GROUP BY Category");
-    var DistinctCat = db.Query("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @CurrentUserId); 
+    var data = db.Query("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
     <!--var DinCat = data.Select("Category");-->
     
-    var myChart = new Chart(width: 600, height: 400)
-        .AddTitle("Product Costs")
-        .AddSeries("Default", 
-            xValue: DistinctCat, xField: "Category",
-            yValues: data, yFields: "Price")
-        .Write(); 
+    var myChart = new Chart(width: 600, height: 400);
+        myChart=myChart.AddTitle("Product Costs");
+        myChart = myChart.AddSeries("Default",
+            xValue: data, xField: "Category",
+            yValues: data, yFields: "TotalPrice");
+        myChart=myChart.Write(); 
  
 }
