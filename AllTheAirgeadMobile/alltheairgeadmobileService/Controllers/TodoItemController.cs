@@ -7,8 +7,11 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using alltheairgeadmobileService.DataObjects;
 using alltheairgeadmobileService.Models;
 
+using Microsoft.WindowsAzure.Mobile.Service.Security;
+
 namespace alltheairgeadmobileService.Controllers
 {
+    [AuthorizeLevel(AuthorizationLevel.User)]
     public class TodoItemController : TableController<TodoItem>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
