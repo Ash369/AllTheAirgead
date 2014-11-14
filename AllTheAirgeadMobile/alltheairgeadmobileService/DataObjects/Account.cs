@@ -5,6 +5,6 @@ namespace alltheairgeadmobileService.DataObjects
     public class Account : EntityData
     {
         public string Username { get; set; }
-        public byte[] HashedPassword { get; set; }
+        public string HashedPassword { get; set; }
     }
 }

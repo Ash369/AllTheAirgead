@@ -77,6 +77,11 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Http">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
@@ -152,6 +157,7 @@
     <Reference Include="Microsoft.AspNet.Identity.Owin">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsAzure.ServiceBus">
       <HintPath>..\packages\WindowsAzure.ServiceBus.2.3.4.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
@@ -182,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="ScheduledJobs\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -189,17 +196,19 @@
     <Compile Include="Controllers\CustomRegistrationController.cs" />
     <Compile Include="Controllers\PublicContentController.cs" />
     <Compile Include="Controllers\PublicHelpController.cs" />
-    <Compile Include="Controllers\TodoItemController.cs" />
     <Compile Include="DataObjects\Account.cs" />
     <Compile Include="DataObjects\CustomLoginProviderCredentials.cs" />
     <Compile Include="DataObjects\LoginRequest.cs" />
     <Compile Include="DataObjects\RegistrationRequest.cs" />
-    <Compile Include="DataObjects\TodoItem.cs" />
     <Compile Include="External References\EmailValidator.cs" />
+    <Compile Include="Models\alltheairgeadContext.cs" />
     <Compile Include="Models\alltheairgeadmobileContext.cs" />
+    <Compile Include="DataObjects\Catagory.cs" />
     <Compile Include="Models\CustomLoginProvider.cs" />
-    <Compile Include="Models\CustomLoginProviderUtils.cs" />
-    <Compile Include="ScheduledJobs\SampleJob.cs" />
+    <Compile Include="DataObjects\Expense.cs" />
+    <Compile Include="Models\SimpleMappedEntityDomainManager.cs" />
+    <Compile Include="DataObjects\UserProfile.cs" />
+    <Compile Include="DataObjects\webpages_Membership.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

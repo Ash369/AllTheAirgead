@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Helpers;
 using System.Security.Claims;
 using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Security;
@@ -19,18 +20,20 @@ namespace alltheairgeadmobileService.Controllers
         // POST api/CustomLogin
         public HttpResponseMessage Post(LoginRequest Request)
         {
-            alltheairgeadmobileContext context = new alltheairgeadmobileContext();
+            // Use local database context for testing local to service
+            //alltheairgeadmobileContext context = new alltheairgeadmobileContext();
+            alltheairgeadContext context = new alltheairgeadContext(Services.Settings["ExistingDbConnectionString"]);
             try
             {
-                Account account = context.Accounts.Where(a => a.Username == Request.Username).SingleOrDefault();
+                UserProfile account = context.UserProfiles.Where(a => a.Email == Request.Email).SingleOrDefault();
+                var temp = context.UserProfiles;
                 if (account != null)
                 {
-                    byte[] incoming = CustomLoginProviderUtils.hash(Request.Password);
-
-                    if (CustomLoginProviderUtils.slowEquals(incoming, account.HashedPassword))
+                    webpages_Membership membership = context.Memberships.Where(a => a.UserId == account.UserId).SingleOrDefault();
+                    if(Crypto.VerifyHashedPassword(membership.Password, Request.Password))
                     {
                         ClaimsIdentity claimsIdentity = new ClaimsIdentity();
-                        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, Request.Username));
+                        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, Request.Email));
                         LoginResult loginResult = new CustomLoginProvider(handler).CreateLoginResult(claimsIdentity, Services.Settings.MasterKey);
                         return this.Request.CreateResponse(HttpStatusCode.OK, loginResult);
                     }
@@ -42,11 +45,11 @@ namespace alltheairgeadmobileService.Controllers
                 return this.Request.CreateResponse(HttpStatusCode.Unauthorized, "Invalid username or password");
             }
         }
-        public HttpResponseMessage Post(string username, string password)
+        public HttpResponseMessage Post(string Email, string Password)
         {
             LoginRequest Request = new LoginRequest();
-            Request.Username = username;
-            Request.Password = password;
+            Request.Email = Email;
+            Request.Password = Password;
 
             var result = Post(Request);
             return result;
