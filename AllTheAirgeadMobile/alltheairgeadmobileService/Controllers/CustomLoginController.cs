@@ -1,5 +1,5 @@
-﻿using System.Net;
-using System.Linq;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Security.Claims;
@@ -7,7 +7,6 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Security;
 using alltheairgeadmobileService.DataObjects;
 using alltheairgeadmobileService.Models;
-
 
 namespace alltheairgeadmobileService.Controllers
 {
@@ -18,12 +17,8 @@ namespace alltheairgeadmobileService.Controllers
         public IServiceTokenHandler handler { get; set; }
 
         // POST api/CustomLogin
-        public HttpResponseMessage Post(string username, string password)
+        public HttpResponseMessage Post(LoginRequest Request)
         {
-            LoginRequest Request = new LoginRequest();
-            Request.Username = username;
-            Request.Password = password;
-
             alltheairgeadmobileContext context = new alltheairgeadmobileContext();
             try
             {
@@ -46,6 +41,15 @@ namespace alltheairgeadmobileService.Controllers
             {
                 return this.Request.CreateResponse(HttpStatusCode.Unauthorized, "Invalid username or password");
             }
+        }
+        public HttpResponseMessage Post(string username, string password)
+        {
+            LoginRequest Request = new LoginRequest();
+            Request.Username = username;
+            Request.Password = password;
+
+            var result = Post(Request);
+            return result;
         }
     }
 }

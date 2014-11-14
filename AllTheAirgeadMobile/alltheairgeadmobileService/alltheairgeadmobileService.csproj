@@ -195,6 +195,7 @@
     <Compile Include="DataObjects\LoginRequest.cs" />
     <Compile Include="DataObjects\RegistrationRequest.cs" />
     <Compile Include="DataObjects\TodoItem.cs" />
+    <Compile Include="External References\EmailValidator.cs" />
     <Compile Include="Models\alltheairgeadmobileContext.cs" />
     <Compile Include="Models\CustomLoginProvider.cs" />
     <Compile Include="Models\CustomLoginProviderUtils.cs" />

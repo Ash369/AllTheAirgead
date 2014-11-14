@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Security;
 using alltheairgeadmobileService.Models;
 using alltheairgeadmobileService.DataObjects;
+using EmailValidation;
 
 namespace alltheairgeadmobileService.Controllers
 {
@@ -17,15 +18,11 @@ namespace alltheairgeadmobileService.Controllers
         public ApiServices Services { get; set; }
 
         // POST api/CustomRegistration
-        public HttpResponseMessage Post(string username, string password)
+        public HttpResponseMessage Post(RegistrationRequest Request)
         {
-            RegistrationRequest Request = new RegistrationRequest();
-            Request.Username = username;
-            Request.Password = password;
-
-            if (!Regex.IsMatch(Request.Username, "^[a-zA-Z0-9]{4,}$"))
+            if (!EmailValidator.Validate(Request.Username, true))
             {
-                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid username (at least 4 chars, alphanumeric only)");
+                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid username");
             }
             else if (Request.Password.Length < 8)
             {
@@ -50,6 +47,16 @@ namespace alltheairgeadmobileService.Controllers
                 context.SaveChanges();
                 return this.Request.CreateResponse(HttpStatusCode.Created);
             }
+        }
+
+        public HttpResponseMessage Post(string username, string password)
+        {
+            RegistrationRequest Request = new RegistrationRequest();
+            Request.Username = username;
+            Request.Password = password;
+
+            var result = Post(Request);
+            return result;
         }
     }
 }
