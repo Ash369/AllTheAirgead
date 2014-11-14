@@ -103,7 +103,8 @@ namespace alltheairgeadApp
         {
             CustomAccountService AccountService = new CustomAccountService();
             // Login the user and then load data from the mobile service.
-            if (await AccountService.Login(EmailLogin.Text, PasswordLogin.Password))
+            Boolean LoginVerbose = true;
+            if (await AccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
                 {

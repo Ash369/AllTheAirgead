@@ -22,12 +22,13 @@ namespace alltheairgeadApp.Services
             Boolean result;
             try
             {
-                string HttpRequestBodyString = "{username:\"" + username + "\", password:\"" + password + "\"}";
+                string HttpRequestBodyString = "{Email:\"" + username + "\", Password:\"" + password + "\"}";
                 StringContent HttpRequestBody = new StringContent(HttpRequestBodyString, Encoding.UTF8, "application/json");
                 var response = await App.alltheairgeadClient.InvokeApiAsync("CustomRegistration", HttpRequestBody, System.Net.Http.HttpMethod.Post, null, null);
                 response.EnsureSuccessStatusCode();
 
-                if(! await Login(username, password))
+                bool LoginVerbose = false;
+                if(! await Login(username, password, LoginVerbose))
                 {
                     message = "Registered but could not log in";
                     result = true;
@@ -45,13 +46,13 @@ namespace alltheairgeadApp.Services
             return result;
         }
 
-        public async Task<Boolean> Login(string username, string password)
+        public async Task<Boolean> Login(string username, string password, Boolean verbose)
         {
             string message;
             Boolean result;
             try
             {
-                string HttpRequestBodyString = "{username:\"" + username + "\", password:\"" + password + "\"}";
+                string HttpRequestBodyString = "{Email:\"" + username + "\", Password:\"" + password + "\"}";
                 StringContent HttpRequestBody = new StringContent(HttpRequestBodyString, Encoding.UTF8, "application/json");
                 var response = await App.alltheairgeadClient.InvokeApiAsync("CustomLogin", HttpRequestBody, System.Net.Http.HttpMethod.Post, null, null);
                 response.EnsureSuccessStatusCode();
@@ -69,8 +70,11 @@ namespace alltheairgeadApp.Services
                 message = ex.Message;
                 result = false;
             }
-            MessageDialog Dialog = new MessageDialog(message);
-            await Dialog.ShowAsync();
+            if (verbose)
+            {
+                MessageDialog Dialog = new MessageDialog(message);
+                await Dialog.ShowAsync();
+            }
             return result;
         }
     }
