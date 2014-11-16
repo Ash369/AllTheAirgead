@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -16,8 +17,11 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Windows.Security.Credentials;
 using Microsoft.WindowsAzure.MobileServices;
 using alltheairgeadApp.Services;
+using alltheairgeadApp.DataObjects;
+using Windows.UI.Popups;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -113,20 +117,20 @@ namespace alltheairgeadApp
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                //if (String.IsNullOrWhiteSpace(App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken))
-                //{
+                if (!(await FindStoredCredentials()))
+                {
                     if(!rootFrame.Navigate(typeof(LoginPage), e.Arguments))
                     {
                         throw new Exception("Failed to create login page");
                     }
-                //}
+                }
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter.
-                //else if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
-                //{
+                else if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
+                {
                     //throw new Exception("Failed to create initial page");
-                //}
+                }
             }
 
             // Ensure the current window is active.
@@ -155,6 +159,45 @@ namespace alltheairgeadApp
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
             deferral.Complete();
+        }
+
+        private async Task<bool> FindStoredCredentials()
+        {
+            PasswordVault Vault = new PasswordVault();
+            PasswordCredential Credential = null;
+            while (Credential == null)
+            {
+                try
+                {
+                    Credential = Vault.RetrieveAll().FirstOrDefault();
+
+                    App.alltheairgeadClient.CurrentUser = new MobileServiceUser(Credential.UserName);
+                    Credential.RetrievePassword();
+                    App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken = Credential.Password;
+
+                    try
+                    {
+                        //await App.alltheairgeadClient.GetTable<Expense>().Take(1).ToListAsync();
+                    }
+                    catch (MobileServiceInvalidOperationException ex)
+                    {
+                        if (ex.Response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            Vault.Remove(Credential);
+                            Credential = null;
+                            continue;
+                        }
+                    }
+
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            MessageDialog Dialog = new MessageDialog("Signed in as " + Credential.UserName);
+            await Dialog.ShowAsync();
+            return true;
         }
     }
 }
