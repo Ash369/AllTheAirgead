@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Navigation;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 using Windows.ApplicationModel.Resources;
+using Microsoft.WindowsAzure.MobileServices;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -110,6 +111,7 @@ namespace alltheairgeadApp
                 {
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
+
             }
         }
 

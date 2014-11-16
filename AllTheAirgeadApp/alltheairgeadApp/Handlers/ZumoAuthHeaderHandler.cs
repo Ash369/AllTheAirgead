@@ -10,12 +10,12 @@ namespace alltheairgeadApp.Handlers
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(CustomAccountService.AuthenticationToken))
+            if (string.IsNullOrWhiteSpace(App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken))
             {
                 throw new InvalidOperationException("User is not currently logged in");
             }
 
-            request.Headers.Add("X-ZUMO-AUTH", CustomAccountService.AuthenticationToken);
+            request.Headers.Add("X-ZUMO-AUTH", App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken);
 
             return base.SendAsync(request, cancellationToken);
         }

@@ -1,23 +1,14 @@
-﻿using alltheairgeadApp.Common;
-using alltheairgeadApp.Data;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Popups;
+using alltheairgeadApp.Common;
+using alltheairgeadApp.Data;
+using alltheairgeadApp.Services;
+using alltheairgeadApp.DataObjects;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -165,8 +156,26 @@ namespace alltheairgeadApp
 
         #endregion
 
-        private void SubmitButton_Click(object sender, RoutedEventArgs e)
+        private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
+            ExpenseService ExpenseService = new ExpenseService();
+            Expense ExpenseData = new Expense((Category.SelectedValue as ComboBoxItem).Content.ToString(), Decimal.Parse(Price.Text), Date.Date, Time.Time, MoreInfo.Text);
+            if(await ExpenseService.AddExpense(ExpenseData))
+            {
+                MessageDialog Dialog = new MessageDialog("Expense saved");
+                await Dialog.ShowAsync();
+                Category.SelectedIndex = -1;
+                Price.Text = "";
+                Date.Date = DateTime.Now;
+                Time.Time = DateTime.Now.TimeOfDay;
+                MoreInfo.Text = "";
+            }
+            else
+            {
+                MessageDialog Dialog = new MessageDialog("Saving Failed");
+                await Dialog.ShowAsync();
+            }
+
 
         }
     }

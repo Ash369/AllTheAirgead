@@ -113,20 +113,20 @@ namespace alltheairgeadApp
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                if (CustomAccountService.AuthenticationToken == null || CustomAccountService.AuthenticationToken == System.String.Empty)
-                {
+                //if (String.IsNullOrWhiteSpace(App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken))
+                //{
                     if(!rootFrame.Navigate(typeof(LoginPage), e.Arguments))
                     {
                         throw new Exception("Failed to create login page");
                     }
-                }
+                //}
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter.
-                else if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
-                {
-                    throw new Exception("Failed to create initial page");
-                }
+                //else if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
+                //{
+                    //throw new Exception("Failed to create initial page");
+                //}
             }
 
             // Ensure the current window is active.

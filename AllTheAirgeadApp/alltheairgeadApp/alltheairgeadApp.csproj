@@ -105,6 +105,7 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="DataObjects\Account.cs" />
+    <Compile Include="DataObjects\Expense.cs" />
     <Compile Include="Handlers\ZumoAuthHeaderHandler.cs" />
     <Compile Include="ItemPage.xaml.cs">
       <DependentUpon>ItemPage.xaml</DependentUpon>
@@ -117,6 +118,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CustomAccountService.cs" />
+    <Compile Include="Services\ExpenseService.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
