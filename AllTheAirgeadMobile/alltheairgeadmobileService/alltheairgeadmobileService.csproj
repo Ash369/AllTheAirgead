@@ -79,6 +79,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -194,10 +195,12 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CustomLoginController.cs" />
     <Compile Include="Controllers\CustomRegistrationController.cs" />
+    <Compile Include="Controllers\ExpenseController.cs" />
     <Compile Include="Controllers\PublicContentController.cs" />
     <Compile Include="Controllers\PublicHelpController.cs" />
     <Compile Include="DataObjects\Account.cs" />
     <Compile Include="DataObjects\CustomLoginProviderCredentials.cs" />
+    <Compile Include="DataObjects\ExpenseDto.cs" />
     <Compile Include="DataObjects\LoginRequest.cs" />
     <Compile Include="DataObjects\RegistrationRequest.cs" />
     <Compile Include="External References\EmailValidator.cs" />

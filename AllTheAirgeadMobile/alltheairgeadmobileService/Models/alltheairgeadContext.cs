@@ -30,8 +30,20 @@ namespace alltheairgeadmobileService.Models
 
         public System.Data.Entity.DbSet<webpages_Membership> Memberships { get; set; }
         public System.Data.Entity.DbSet<UserProfile> UserProfiles { get; set; }
+        public System.Data.Entity.DbSet<Expense> Expenses { get; set; }
 
+        /*
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Add(
+                new AttributeToColumnAnnotationConvention<TableColumnAttribute, string>(
+                    "ServiceTableColumn", (property, attributes) => attributes.Single().ColumnType.ToString()));
 
+            base.OnModelCreating(modelBuilder);
+        } 
+        */
+
+        // Debugging override to see what caused error in save to database
         public override int SaveChanges()
         {
             try
@@ -55,6 +67,8 @@ namespace alltheairgeadmobileService.Models
                 throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
             }
         }
+
+        //public System.Data.Entity.DbSet<alltheairgeadmobileService.DataObjects.ExpenseDto> ExpenseDtoes { get; set; }
     }
 }
 

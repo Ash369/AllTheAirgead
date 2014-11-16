@@ -26,6 +26,7 @@ namespace alltheairgeadmobileService.Models
         }
 
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

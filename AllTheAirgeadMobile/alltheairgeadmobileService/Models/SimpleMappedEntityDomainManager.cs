@@ -16,7 +16,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.OData;
 
-namespace MobileServiceUtilities.Models
+namespace alltheairgeadmobileService.Models
 {
 
     //Utilities for Hooking up models
