@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Security;
 using alltheairgeadmobileService.DataObjects;
 using alltheairgeadmobileService.Models;
+using System;
 
 namespace alltheairgeadmobileService.Controllers
 {
@@ -38,43 +39,58 @@ namespace alltheairgeadmobileService.Controllers
 
         }
 
-        // GET tables/Expense
-        public IQueryable<ExpenseDto> GetAllExpense()
-        {
-            return Query(); 
-        }
-
-        // GET tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public SingleResult<ExpenseDto> GetExpense(string id)
-        {
-            return Lookup(id);
-        }
-
-        // PATCH tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task<ExpenseDto> PatchExpense(string id, Delta<ExpenseDto> patch)
-        {
-             return UpdateAsync(id, patch);
-        }
-
-        // POST tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public async Task<IHttpActionResult> PostExpense(ExpenseDto item)
+        private UserProfile ValidateUser(ServiceUser CurrentUser)
         {
             try
             {
-                // Get the logged in user
-                var CurrentUser = User as ServiceUser;
                 // Extract email from user
                 string Email = CurrentUser.Id.Substring(CurrentUser.Id.IndexOf(':') + 1);
                 // Get the UserId from UserProfiles table
                 alltheairgeadContext context = new alltheairgeadContext(Services.Settings["ExistingDbConnectionString"]);
-                UserProfile account = context.UserProfiles.Where(a => a.Email == Email).SingleOrDefault();
-                // Assign incoming item's UserId to current user's
-                item.UserId = account.UserId;
+                return context.UserProfiles.Where(a => a.Email == Email).SingleOrDefault();
             }
             catch
             {
                 throw new HttpException(401, "User not found");
             }
+        }
+        // GET tables/Expense
+        public IQueryable<ExpenseDto> GetAllExpense()
+        {
+            UserProfile account = ValidateUser(User as ServiceUser);
+            return Query().Where(Expense => Expense.UserId == account.UserId);
+        }
+
+        // GET tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public SingleResult<ExpenseDto> GetExpense(string id)
+        {
+            UserProfile account = ValidateUser(User as ServiceUser);
+
+            var result = Lookup(id);
+            if (result.Queryable.First().UserId == account.UserId)
+                return result;
+            else
+                throw new HttpException(401, "Data belongs to another user");
+        }
+
+        // PATCH tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public Task<ExpenseDto> PatchExpense(string id, Delta<ExpenseDto> patch)
+        {
+            UserProfile account = ValidateUser(User as ServiceUser);
+
+            if (Lookup(id).Queryable.First().UserId == account.UserId)
+                return UpdateAsync(id, patch);
+            else
+                throw new HttpException(401, "Data belongs to another user");
+        }
+
+        // POST tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
+        public async Task<IHttpActionResult> PostExpense(ExpenseDto item)
+        {
+            UserProfile account = ValidateUser(User as ServiceUser);
+
+            // Assign incoming item's UserId to current user's
+            item.UserId = account.UserId;
             ExpenseDto current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
         }
@@ -82,7 +98,12 @@ namespace alltheairgeadmobileService.Controllers
         // DELETE tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
         public Task DeleteExpense(string id)
         {
-             return DeleteAsync(id);
+            UserProfile account = ValidateUser(User as ServiceUser);
+
+            if (Lookup(id).Queryable.First().UserId == account.UserId)
+                return DeleteAsync(id);
+            else
+                throw new HttpException(401, "Data belongs to another user");
         }
 
     }
