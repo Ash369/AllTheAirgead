@@ -15,7 +15,7 @@ namespace alltheairgeadmobileService.DataObjects
 
         public string MoreInfo { get; set; }
 
-        public DateTime? Time { get; set; }
+        public DateTime Time { get; set; }
 
         public short? Priority { get; set; }
     }

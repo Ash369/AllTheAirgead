@@ -13,7 +13,7 @@ namespace alltheairgeadmobileService.DataObjects
 
         public int UserId { get; set; }
 
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
         [StringLength(128)]
@@ -26,7 +26,7 @@ namespace alltheairgeadmobileService.DataObjects
         public string MoreInfo { get; set; }
 
         [Column(TypeName = "smalldatetime")]
-        public DateTime? Time { get; set; }
+        public DateTime Time { get; set; }
 
         public short? Priority { get; set; }
         /*
