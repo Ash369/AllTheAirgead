@@ -51,7 +51,7 @@ namespace alltheairgeadmobileService.Controllers
             }
             catch
             {
-                throw new HttpException(401, "User not found");
+                throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
             }
         }
         // GET tables/Expense
@@ -66,11 +66,12 @@ namespace alltheairgeadmobileService.Controllers
         {
             UserProfile account = ValidateUser(User as ServiceUser);
 
-            var result = Lookup(id);
-            if (result.Queryable.First().UserId == account.UserId)
-                return result;
+            var query = Lookup(id);
+            var result = query.Queryable.First();
+            if (result.UserId == account.UserId)
+                return Lookup(id);
             else
-                throw new HttpException(401, "Data belongs to another user");
+                throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
         }
 
         // PATCH tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
@@ -78,10 +79,11 @@ namespace alltheairgeadmobileService.Controllers
         {
             UserProfile account = ValidateUser(User as ServiceUser);
 
-            if (Lookup(id).Queryable.First().UserId == account.UserId)
+            ExpenseDto Expense = Lookup(id).Queryable.First();
+            if (Expense.UserId == account.UserId)
                 return UpdateAsync(id, patch);
             else
-                throw new HttpException(401, "Data belongs to another user");
+                throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
         }
 
         // POST tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
@@ -100,10 +102,11 @@ namespace alltheairgeadmobileService.Controllers
         {
             UserProfile account = ValidateUser(User as ServiceUser);
 
-            if (Lookup(id).Queryable.First().UserId == account.UserId)
+            ExpenseDto Expense = Lookup(id).Queryable.First();
+            if (Expense.UserId == account.UserId)
                 return DeleteAsync(id);
             else
-                throw new HttpException(401, "Data belongs to another user");
+                throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
         }
 
     }

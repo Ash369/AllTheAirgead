@@ -7,7 +7,7 @@ namespace alltheairgeadmobileService.DataObjects
     {
         public int UserId { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         public string Category { get; set; }
 
@@ -15,7 +15,7 @@ namespace alltheairgeadmobileService.DataObjects
 
         public string MoreInfo { get; set; }
 
-        public DateTime Time { get; set; }
+        public DateTime? Time { get; set; }
 
         public short? Priority { get; set; }
     }
