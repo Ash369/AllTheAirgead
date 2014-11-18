@@ -58,7 +58,7 @@ namespace alltheairgeadmobileService.Controllers
         public IQueryable<ExpenseDto> GetAllExpense()
         {
             UserProfile account = ValidateUser(User as ServiceUser);
-            return Query().Where(Expense => Expense.UserId == account.UserId);
+            return Query().Where(ExpenseData => ExpenseData.UserId == account.UserId);
         }
 
         // GET tables/Expense/48D68C86-6EA6-4C25-AA33-223FC9A27959
@@ -79,8 +79,8 @@ namespace alltheairgeadmobileService.Controllers
         {
             UserProfile account = ValidateUser(User as ServiceUser);
 
-            ExpenseDto Expense = Lookup(id).Queryable.First();
-            if (Expense.UserId == account.UserId)
+            ExpenseDto ExpenseData = Lookup(id).Queryable.First();
+            if (ExpenseData.UserId == account.UserId)
                 return UpdateAsync(id, patch);
             else
                 throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
@@ -102,8 +102,8 @@ namespace alltheairgeadmobileService.Controllers
         {
             UserProfile account = ValidateUser(User as ServiceUser);
 
-            ExpenseDto Expense = Lookup(id).Queryable.First();
-            if (Expense.UserId == account.UserId)
+            ExpenseDto ExpenseData = Lookup(id).Queryable.First();
+            if (ExpenseData.UserId == account.UserId)
                 return DeleteAsync(id);
             else
                 throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
