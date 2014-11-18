@@ -5,7 +5,7 @@
             + Request.Url.LocalPath);
     }
     
-    
+    var ChartType="";
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
     var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + @UserId + " ORDER BY Date DESC, Time DESC";
@@ -13,6 +13,10 @@
 
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Charts";
+
+    if(IsPost)
+         ChartType=Request["formChartType"];
+         
 
  }
 
@@ -29,8 +33,29 @@
     </style>
  </head>
  <body>
+       <form action="" method="post">
+         <p>Time Span:
+             <select name="formChartType">
+                 <option value="Day" selected>Daily</option>
+                 <option value="Month">Monthly</option>
+                 <option value="Year">Yearly</option>
+                 <option value="All">All Expense History</option>
+             </select></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form>
    <h1>Charts</h1>
-       <img src="~/AllChartData.cshtml" alt="Sample chart"/>
+     @switch(ChartType){
+     case "All":<img src="~/AllChartData.cshtml" alt="Sample chart"/>
+        break;
+     case "Year":<img src="~/YearGraph.cshtml" alt="Sample chart"/>
+        break;
+     case "Month":<img src="~/MonthGraph.cshtml" alt="Sample chart"/>
+        break;
+     case "Day":<img src="~/DayGraph.cshtml" alt="Sample chart"/>
+        break;
+     }
+     
+       
    <table>
        <thead>
            <tr>
@@ -50,41 +75,12 @@
                    <td>@row.Price</td>
                    <td>@row.MoreInfo</td>
             </tr>
-           }
-       </tbody>
-   </table>
-
-     <table>
-       <thead>
-           <tr>
-               @foreach(var row in db.Query(selectQueryString)){
-
-                <th>@row.Category</th>
-           }
-               </tr>
-       </thead>
-       <tbody>
-           @foreach(var row in db.Query(SelectUserCategories)){
-            foreach(var row2 in db.Query(selectQueryString)){
-                if(row.Category==row2.Category)
-                {
-                    var SumQueryString = db.QuerySingle("SELECT SUM(Price) AS TotalPrice FROM Expense WHERE Category = '" + row2.Category + "'");
-                    int value = (int)SumQueryString.TotalPrice;
-
-                    if (!TotalPrices.ContainsKey(row.Category)){
-                        TotalPrices.Add(row.Category, value);   
-                    }
-                    else
-                    {
-                        TotalPrices[row.Category] = TotalPrices[row.Category] + value;
-                    }
-                        
-                        
-                    
-                }
             }
-           }
+       }
+
+       
        </tbody>
    </table>
+
  </body>
 </html>
