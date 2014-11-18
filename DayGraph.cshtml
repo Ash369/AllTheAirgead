@@ -1,0 +1,16 @@
+﻿@{
+   
+    var db = Database.Open("StarterSite");
+    var CurrentUserId = WebSecurity.CurrentUserId;
+    var data = db.Query("SELECT Time, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Month(Date) = Month(getdate())GROUP BY Time");
+    <!--var DinCat = data.Select("Category");-->
+    
+    var myChart = new Chart(width: 600, height: 400);
+        myChart=myChart.AddTitle("Product Costs");
+        myChart = myChart.AddSeries("Default", chartType:"Line",
+            xValue: data, xField: "Time",
+            yValues: data, yFields: "TotalPrice");
+        myChart=myChart.Write(); 
+ 
+}
+</html>
