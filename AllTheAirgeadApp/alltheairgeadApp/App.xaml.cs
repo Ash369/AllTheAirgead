@@ -1,5 +1,4 @@
-﻿using alltheairgeadApp.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,11 +16,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Popups;
 using Windows.Security.Credentials;
 using Microsoft.WindowsAzure.MobileServices;
 using alltheairgeadApp.Services;
 using alltheairgeadApp.DataObjects;
-using Windows.UI.Popups;
+using alltheairgeadApp.Common;
+
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -37,11 +38,12 @@ namespace alltheairgeadApp
         // This MobileServiceClient has been configured to communicate with your local
         // test project for debugging purposes.
         public static MobileServiceClient alltheairgeadClient = new MobileServiceClient(
-            //"http://localhost:58202"
-            //"http://alltheairgeadmobile.azure-mobile.net/"
-            //"http://169.254.80.80:58202"
-            "http://192.168.1.33:58202"
-            //"https://alltheairgeadmobile.azure-mobile.net/"
+            //"http://localhost:58202",
+            //"http://alltheairgeadmobile.azure-mobile.net/",
+            //"http://169.254.80.80:58202",
+            "http://192.168.1.33:58202",
+            //"https://alltheairgeadmobile.azure-mobile.net/",
+            "lcuZZgCZmiwgIzVWDDuPErwSiBpZqA23"
         );
 
         /// <summary>
@@ -177,7 +179,7 @@ namespace alltheairgeadApp
 
                     try
                     {
-                        //await App.alltheairgeadClient.GetTable<Expense>().Take(1).ToListAsync();
+                        await App.alltheairgeadClient.GetTable<Expense>().Take(1).ToListAsync();
                     }
                     catch (MobileServiceInvalidOperationException ex)
                     {
@@ -186,6 +188,10 @@ namespace alltheairgeadApp
                             Vault.Remove(Credential);
                             Credential = null;
                             continue;
+                        }
+                        else if (ex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            // Deal with offline
                         }
                     }
 

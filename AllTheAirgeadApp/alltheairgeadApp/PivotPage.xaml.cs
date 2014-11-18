@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Globalization;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Popups;
+using Microsoft.WindowsAzure.MobileServices;
 using alltheairgeadApp.Common;
-using alltheairgeadApp.Data;
 using alltheairgeadApp.Services;
 using alltheairgeadApp.DataObjects;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -64,9 +66,11 @@ namespace alltheairgeadApp
         /// session. The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            /*
             // TODO: Create an appropriate data model for your problem domain to replace the sample data
             var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-1");
             this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
+             */
         }
 
         /// <summary>
@@ -86,7 +90,7 @@ namespace alltheairgeadApp
         /// Adds an item to the list when the app bar button is clicked.
         /// </summary>
         private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
-        {
+        {/*
             string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
             var group = this.DefaultViewModel[groupName] as SampleDataGroup;
             var nextItemId = group.Items.Count + 1;
@@ -104,13 +108,14 @@ namespace alltheairgeadApp
             var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
             var listView = container.ContentTemplateRoot as ListView;
             listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
+        */
         }
 
         /// <summary>
         /// Invoked when an item within a section is clicked.
         /// </summary>
         private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
-        {
+        {/*
             // Navigate to the appropriate destination page, configuring the new page
             // by passing required information as a navigation parameter
             var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
@@ -118,15 +123,17 @@ namespace alltheairgeadApp
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
+          */
         }
 
         /// <summary>
         /// Loads the content for the second pivot item when it is scrolled into view.
         /// </summary>
         private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
-        {
+        {/*
             var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
             this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
+          */
         }
 
         #region NavigationHelper registration
@@ -144,9 +151,11 @@ namespace alltheairgeadApp
         /// </summary>
         /// <param name="e">Provides data for navigation methods and event
         /// handlers that cannot cancel the navigation request.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);
+
+            await UpdateExpenseChart();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -154,12 +163,104 @@ namespace alltheairgeadApp
             this.navigationHelper.OnNavigatedFrom(e);
         }
 
+        public class NameValueItem
+        {
+            public DateTime Date { get; set; }
+            public int Value { get; set; }
+            public int Id { get; set; }
+        }
+
+        DateTime MinDisplayedDate = DateTime.Now.Date;
+        List<NameValueItem> items = new List<NameValueItem>();
+        public async Task UpdateExpenseChart()
+        {
+            if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
+            {
+                List<NameValueItem> TempItems = new List<NameValueItem>();
+                List<Expense> Expenses;
+                IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
+                int its = 0;
+                do
+                {
+                    MinDisplayedDate = MinDisplayedDate.AddDays(-7);
+                    Expenses = await ExpenseTable.Where(a => (a.Date > MinDisplayedDate) & (a.Date <= MinDisplayedDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
+                    its++;
+                } while (Expenses.Count == 0 || its >= 5);
+                if (Expenses.Count != 0)
+                {
+                    ExpenseChart.Width += 1000*its;
+                    foreach (Expense i in Expenses)
+                        TempItems.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
+
+                    items.AddRange(TempItems);
+                    ((LineSeries)ExpenseChart.Series[0]).ItemsSource = items;
+                    ((LineSeries)ExpenseChart.Series[0]).IndependentAxis =
+                        new DateTimeAxis
+                        {
+                            Minimum = MinDisplayedDate,
+                            Maximum = DateTime.Now,
+                            Orientation = AxisOrientation.X,
+                            Interval = 1 / ChartScroll.ZoomFactor,
+                            IntervalType = DateTimeIntervalType.Days,
+
+                        };
+                    ((LineSeries)ExpenseChart.Series[0]).DependentRangeAxis =
+                        new LinearAxis
+                        {
+                            Orientation = AxisOrientation.Y,
+                            ShowGridLines = true,
+                            Location = AxisLocation.Right,
+                        };
+                }
+                ((LineSeries)ExpenseChart.Series[0]).Refresh();
+                UpdateExpenseAxis();
+            }
+            else
+                (((LineSeries)ExpenseChart.Series[0]).IndependentAxis as DateTimeAxis).Interval = 1 / ChartScroll.ZoomFactor;
+        }
+
+        public void UpdateExpenseAxis()
+        {/*
+            List<NameValueItem> TempItems = items;
+            TempItems.Sort(delegate(NameValueItem a, NameValueItem b)
+            {
+                if (a.Value > b.Value)
+                    return 1;
+                else if (a.Value < b.Value)
+                    return -1;
+                else
+                    return 0;
+            });
+            ((LineSeries)FixedAxisChart.Series[0]).DependentRangeAxis =
+                new LinearAxis
+                {
+                    Minimum = TempItems[0].Value,
+                    Maximum = TempItems[TempItems.Count - 1].Value,
+                    Orientation = AxisOrientation.Y,
+                    Interval = (TempItems[TempItems.Count - 1].Value - TempItems[0].Value) / 5,
+                };*/
+        }
+
+        public async void DataPointTapped(Object sender, SelectionChangedEventArgs e)
+        {
+            IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
+            int Id = ((sender as LineSeries).SelectedItem as NameValueItem).Id;
+            Expense NewExpense = await ExpenseTable.LookupAsync(Id);
+        }
+
+        public async void ChartScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (e.IsIntermediate == false)
+                await UpdateExpenseChart();
+
+        }
+
         #endregion
 
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             ExpenseService ExpenseService = new ExpenseService();
-            Expense ExpenseData = new Expense((Category.SelectedValue as ComboBoxItem).Content.ToString(), Decimal.Parse(Price.Text), Date.Date, Time.Time, MoreInfo.Text);
+            Expense ExpenseData = new Expense((Category.SelectedValue as ComboBoxItem).Content.ToString(), Decimal.Parse(Price.Text), Date.Date, new DateTime(Time.Time.Ticks), MoreInfo.Text);
             if(await ExpenseService.AddExpense(ExpenseData))
             {
                 MessageDialog Dialog = new MessageDialog("Expense saved");

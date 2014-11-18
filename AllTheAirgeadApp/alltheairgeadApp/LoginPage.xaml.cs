@@ -2,10 +2,10 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using alltheairgeadApp.Common;
-using alltheairgeadApp.Services;
 using Windows.ApplicationModel.Resources;
 using Microsoft.WindowsAzure.MobileServices;
+using alltheairgeadApp.Common;
+using alltheairgeadApp.Services;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 

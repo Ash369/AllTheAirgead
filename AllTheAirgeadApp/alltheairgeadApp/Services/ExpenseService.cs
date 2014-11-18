@@ -20,13 +20,19 @@ namespace alltheairgeadApp.Services
             {
                 await ExpenseTable.InsertAsync(ExpenseData);
                 result = true;
-
             }
-            catch
-            {
-                result = false;
-            }
+            catch { result = false; }
             return result;
+        }
+
+        public async Task<List<Expense>> GetExpenses()
+        {
+            try
+            {
+                var Expenses = await ExpenseTable.ToListAsync();
+                return Expenses;
+            }
+            catch { return null; }
         }
     }
 }

@@ -8,12 +8,12 @@ namespace alltheairgeadApp.DataObjects
 {
     public class Expense
     {
-        public Expense(String Category, Decimal Price, DateTimeOffset Date, TimeSpan Time, String MoreInfo)
+        public Expense(String Category, Decimal Price, DateTimeOffset Date, DateTime Time, String MoreInfo)
         {
             this.Category = Category;
             this.Price = Price;
             this.Date = Date.Date;
-            this.Time = new DateTime(Time.Ticks);
+            this.Time = Time;
             this.MoreInfo = MoreInfo;
         }
         public int Id;
