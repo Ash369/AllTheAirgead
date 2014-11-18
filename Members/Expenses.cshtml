@@ -33,7 +33,7 @@
          
          var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, Priority, UserId) VALUES (@0, @1, @2, @3, @4, @5,@6)";
 
-         db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, UserId);
+         db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, Priority, UserId);
          Response.Redirect("~/Members/Charts");
        }
      }
