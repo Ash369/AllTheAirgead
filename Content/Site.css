@@ -126,6 +126,11 @@ footer {
     height: 100px;
 }
 
+#Block {
+    display: inline-block;
+    width: 450px;
+}
+
 
 /* site title
 ----------------------------------------------------------*/
