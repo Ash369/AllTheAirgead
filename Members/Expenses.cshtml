@@ -19,7 +19,6 @@
      UserId= WebSecurity.CurrentUserId;
      var db1 = Database.Open("StarterSite");
      var SelectUserCategories = ("SELECT DISTINCT Category FROM Expense WHERE UserId = " + @UserId + "UNION SELECT CategoryName FROM Catagories");
-     <!--var SelectDefaultCategories = ("SELECT CategoryName FROM Categories");-->
 
      var SelectedData = db1.Query(SelectUserCategories);
        if(IsPost){
@@ -77,6 +76,7 @@
         <li><a href="~/">Home</a></li>
         <li><a href="~/Members/Expenses">Expenses</a></li>
         <li><a href="~/Contact">Contact</a></li>
+        <li><a href="~/Analytics">Money Management</a></li>
     </ul>
 </section>
 </body>

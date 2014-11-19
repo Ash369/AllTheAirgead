@@ -111,7 +111,7 @@ h5, h6 {
     }
 
     .featured + .main-content {
-        background: url("../Images/heroAccent.png") no-repeat;
+        background: url("../Images/Accent.png") no-repeat;
     }
 
 header .content-wrapper {
@@ -216,17 +216,17 @@ ul#menu {
 ----------------------------------------------------------*/
 /* featured */
 .featured {
-    background-color: #fff;
-}
-
-    .featured .content-wrapper {
-        background-color: #339966;
-        background-image: -ms-linear-gradient(left, #339966 0%, #a4d4e6 100%);
+    background-color: #339955;
+        /*background-image: -ms-linear-gradient(left, #339966 0%, #a4d4e6 100%);
         background-image: -o-linear-gradient(left, #339966 0%, #a4d4e6 100%);
         background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #339966), color-stop(1, #a4d4e6));
         background-image: -webkit-linear-gradient(left, #339966 0%, #a4d4e6 100%);
-        background-image: linear-gradient(left, #339966 0%, #a4d4e6 100%);
+        background-image: linear-gradient(left, #339966 0%, #a4d4e6 100%);*/
         color: #3e5667;
+}
+
+    .featured .content-wrapper {
+        background-color: none;
         padding: 20px 40px 30px 40px;
     }
 
