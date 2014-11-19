@@ -2,7 +2,7 @@
    
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT Date, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Month(Date) = Month(getdate())GROUP BY Date");
+    var data = db.Query("SELECT Date, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Month(Date) = Month(getdate()) GROUP BY Date");
     <!--var DinCat = data.Select("Category");-->
     
     var myChart = new Chart(width: 600, height: 400);
