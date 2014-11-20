@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Data;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
@@ -26,8 +27,19 @@ namespace alltheairgeadApp
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
+        private List<Category> Categories;
+        private static readonly IList<string> PriorityLevels = new ReadOnlyCollection<string>
+            (new List<string> { "Low", "Medium", "High" });
+
         DateTime MinExpenseDate = DateTime.Now.Date;
         List<NameValueItem> items = new List<NameValueItem>();
+
+        public class NameValueItem
+        {
+            public DateTime Date { get; set; }
+            public int Value { get; set; }
+            public int Id { get; set; }
+        }
 
         private const double MaxChartXScale = 8.0f;
         private const double MinChartXScale = 0.1f;
@@ -48,6 +60,8 @@ namespace alltheairgeadApp
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            PriorityBox.DataContext = PriorityLevels;
         }
 
         /// <summary>
@@ -169,6 +183,7 @@ namespace alltheairgeadApp
         {
             this.navigationHelper.OnNavigatedTo(e);
 
+            await GetCategoryData();
             await UpdateExpenseChart();
         }
 
@@ -177,15 +192,18 @@ namespace alltheairgeadApp
             this.navigationHelper.OnNavigatedFrom(e);
         }
 
-        public class NameValueItem
-        {
-            public DateTime Date { get; set; }
-            public int Value { get; set; }
-            public int Id { get; set; }
-        }
-
         #endregion
         
+        public async Task GetCategoryData()
+        {
+            List<string> CategoryNames = new List<string>();
+            IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
+            Categories = await CategoryTable.ToListAsync();
+            foreach (Category i in Categories)
+                CategoryNames.Add(i.id);
+            CategoryBox.ItemsSource = CategoryNames;
+        }
+
         public async Task UpdateExpenseChart()
         {
             if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
@@ -197,7 +215,7 @@ namespace alltheairgeadApp
                 if (items.Count >= TotalCount)
                     return;
 
-                // Keep 
+                // Keep track of how many weeks have been checked in the query
                 int weekssearched = 0;
                 do
                 {
@@ -235,6 +253,10 @@ namespace alltheairgeadApp
                 }
             }
         }
+
+        private void CategoryBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
         
         public void DataPointTapped(Object sender, SelectionChangedEventArgs e)
         {
@@ -252,23 +274,49 @@ namespace alltheairgeadApp
         
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
+            // Disable Submit to prevent multiple entries
+            string message;
+            SubmitButton.IsEnabled = false;
             ExpenseService ExpenseService = new ExpenseService();
-            Expense ExpenseData = new Expense((Category.SelectedValue as ComboBoxItem).Content.ToString(), Decimal.Parse(Price.Text), Date.Date, new DateTime(Time.Time.Ticks), MoreInfo.Text);
-            if(await ExpenseService.AddExpense(ExpenseData))
+            try
             {
-                MessageDialog Dialog = new MessageDialog("Expense saved");
-                await Dialog.ShowAsync();
-                Category.SelectedIndex = -1;
-                Price.Text = "";
-                Date.Date = DateTime.Now;
-                Time.Time = DateTime.Now.TimeOfDay;
-                MoreInfo.Text = "";
+                {
+                    if (CategoryBox.SelectedIndex < 0)
+                        throw new Exception("Category must be specified");
+                    if (new DateTime((DateBox.Date.Date + TimeBox.Time).Ticks) > DateTime.Now)
+                    {
+                        DateBox.Date = DateTime.Now;
+                        TimeBox.Time = DateTime.Now.TimeOfDay;
+                        throw new Exception("Date and time must not be in the future");
+                    }
+                    if (String.IsNullOrWhiteSpace(PriceBox.Text) || Decimal.Parse(PriceBox.Text) < 0)
+                        throw new Exception("Price must be positive");
+                }
+
+                Expense ExpenseData = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), MoreInfoBox.Text);
+                if(await ExpenseService.AddExpense(ExpenseData))
+                {
+                    message = "Expense Saved";
+                    CategoryBox.SelectedIndex = -1;
+                    PriceBox.Text = "";
+                    DateBox.Date = DateTime.Now;
+                    TimeBox.Time = DateTime.Now.TimeOfDay;
+                    PriorityBox.SelectedIndex = -1;
+                    MoreInfoBox.Text = "";
+                }
+                else
+                {
+                    message = "Saving Failed";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageDialog Dialog = new MessageDialog("Saving Failed");
-                await Dialog.ShowAsync();
+                message = "Saving Failed\n"+ex.Message;
             }
+            await new MessageDialog(message).ShowAsync();
+
+            // Reenable when finished
+            SubmitButton.IsEnabled = true;
         }
         private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {

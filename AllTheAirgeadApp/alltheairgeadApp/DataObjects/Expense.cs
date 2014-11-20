@@ -14,7 +14,7 @@ namespace alltheairgeadApp.DataObjects
             this.Price = Price;
             this.Date = Date.Date;
             this.Time = Time;
-            this.MoreInfo = MoreInfo;
+            this.MoreInfo = String.IsNullOrWhiteSpace(MoreInfo) ? "" : MoreInfo;
         }
         public int Id;
         public String Category;

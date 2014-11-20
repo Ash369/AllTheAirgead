@@ -46,23 +46,15 @@
                 <!--Double line list with text wrapping-->
                 <StackPanel Width ="250" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Height="40">
-                        <DatePicker x:Name="Date" Width="120" Margin="0,-10,5,0"/>
-                        <TimePicker x:Name="Time" Width="120" Margin="5,-10,0,0"/>
+                        <DatePicker x:Name="DateBox" Width="120" Margin="0,-10,5,0"/>
+                        <TimePicker x:Name="TimeBox" Width="120" Margin="5,-10,0,0"/>
                     </StackPanel>
-                    <ComboBox x:Name="Category" PlaceholderText="Category" AllowDrop="True" Width="250">
-                        <ComboBoxItem Content="Rent"/>
-                        <ComboBoxItem Content="Food"/>
-                        <ComboBoxItem Content="Games"/>
-                        <ComboBoxItem Content="Hobbies"/>
-                        <ComboBoxItem Content="Going out"/>
-                        <ComboBoxItem Content="College"/>
-                        <ComboBoxItem Content="Other"/>
-                    </ComboBox>
-                    <StackPanel Width="250" Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBox x:Name="Price" InputScope="Number" TextWrapping="Wrap" PlaceholderText="€" Width="95" Margin="0,0,5,0"/>
-                        <TextBox x:Name="Priority" InputScope="Number" TextWrapping="NoWrap" PlaceholderText="Priority 1,2,3" Width="145" Margin="5,0,0,0"/>
+                    <ComboBox x:Name="CategoryBox" PlaceholderText="Category" AllowDrop="True" Width="250" ItemsSource="{Binding}" SelectionChanged="CategoryBox_SelectionChanged"/>
+                    <StackPanel Width="250" Orientation="Horizontal" Margin="0,-10,0,-5">
+                        <TextBox x:Name="PriceBox" InputScope="Number" TextWrapping="NoWrap" PlaceholderText="€" Width="135" Margin="0,8,5,0" />
+                        <ComboBox x:Name="PriorityBox" PlaceholderText="Priority" Width="105" Margin="5,0,0,0" ItemsSource="{Binding}"/>
                     </StackPanel>
-                    <TextBox x:Name="MoreInfo" Margin="0,5" TextWrapping="Wrap" PlaceholderText="More info..." Width="250"/>
+                    <TextBox x:Name="MoreInfoBox" Margin="0,5" TextWrapping="Wrap" PlaceholderText="More info..." Width="250"/>
                     <Button x:Name="SubmitButton" Content="Submit" Click="SubmitButton_Click" Height="58" Width="75"/>
                 </StackPanel>
             </PivotItem>
