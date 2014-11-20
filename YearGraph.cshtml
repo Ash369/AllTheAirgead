@@ -6,7 +6,7 @@
     <!--var DinCat = data.Select("Category");-->
     
     var myChart = new Chart(width: 600, height: 400, themePath: "MyChartTheme.xml");
-        myChart=myChart.AddTitle("Product Costs");
+        myChart=myChart.AddTitle("Yearly Costs: ");
         myChart = myChart.AddSeries("Default", chartType:"Line",
             xValue: data, xField: "Date",
             yValues: data, yFields: "TotalPrice");
