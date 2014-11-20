@@ -111,7 +111,6 @@ namespace alltheairgeadApp
                 {
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
-
             }
         }
 

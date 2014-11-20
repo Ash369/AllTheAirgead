@@ -23,7 +23,7 @@
 
         <!-- Title Panel -->
         <Grid Grid.Row="0" x:Name="TitleRoot" Margin="19,9.5,19,0">
-            <TextBlock Text="All the Airgead" Style="{ThemeResource TitleTextBlockStyle}"/>
+            <TextBlock x:Name="Title"  Text="All the Airgead" Style="{ThemeResource TitleTextBlockStyle}"/>
         </Grid>
 
         <!-- Login / Register Pivot -->
@@ -31,7 +31,7 @@
             <Pivot>
                 <Pivot.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock FontFamily="Chiller" FontSize="90" Text="{Binding}" />
+                        <TextBlock FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" FontSize="90" Text="{Binding}" />
                     </DataTemplate>
                 </Pivot.HeaderTemplate>
                 

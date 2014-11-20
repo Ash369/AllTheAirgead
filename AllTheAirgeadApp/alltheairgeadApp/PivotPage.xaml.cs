@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.ComponentModel;
+using Windows.UI.Xaml.Data;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Input;
 using Microsoft.WindowsAzure.MobileServices;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 using alltheairgeadApp.DataObjects;
-using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -18,12 +22,22 @@ namespace alltheairgeadApp
 {
     public sealed partial class PivotPage : Page
     {
-        private const string FirstGroupName = "FirstGroup";
-        private const string SecondGroupName = "SecondGroup";
-
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+
+        DateTime MinExpenseDate = DateTime.Now.Date;
+        List<NameValueItem> items = new List<NameValueItem>();
+
+        private const double MaxChartXScale = 8.0f;
+        private const double MinChartXScale = 0.1f;
+        private const double ChartXScaleIntervalThresh = 6.0f;
+
+        private const double MaxChartYScale = 4.0f;
+        private const double MinChartYScale = 1.0f;
+
+        private double ChartXScale = 1.0f;
+        private double ChartYScale = 1.0f;
 
         public PivotPage()
         {
@@ -129,7 +143,7 @@ namespace alltheairgeadApp
         /// <summary>
         /// Loads the content for the second pivot item when it is scrolled into view.
         /// </summary>
-        private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
+        private void SecondPivot_Loaded(object sender, RoutedEventArgs e)
         {/*
             var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
             this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
@@ -170,8 +184,8 @@ namespace alltheairgeadApp
             public int Id { get; set; }
         }
 
-        DateTime MinDisplayedDate = DateTime.Now.Date;
-        List<NameValueItem> items = new List<NameValueItem>();
+        #endregion
+        
         public async Task UpdateExpenseChart()
         {
             if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
@@ -179,16 +193,21 @@ namespace alltheairgeadApp
                 List<NameValueItem> TempItems = new List<NameValueItem>();
                 List<Expense> Expenses;
                 IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
-                int its = 0;
+                var TotalCount = (await ExpenseTable.Take(0).IncludeTotalCount().ToListAsync() as IQueryResultEnumerable<Expense>).TotalCount;
+                if (items.Count >= TotalCount)
+                    return;
+
+                // Keep 
+                int weekssearched = 0;
                 do
                 {
-                    MinDisplayedDate = MinDisplayedDate.AddDays(-7);
-                    Expenses = await ExpenseTable.Where(a => (a.Date > MinDisplayedDate) & (a.Date <= MinDisplayedDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
-                    its++;
-                } while (Expenses.Count == 0 || its >= 5);
+                    MinExpenseDate = MinExpenseDate.AddDays(-7);
+                    Expenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) & (a.Date <= MinExpenseDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
+                    weekssearched++;
+                } while (Expenses.Count == 0);
                 if (Expenses.Count != 0)
                 {
-                    ExpenseChart.Width += 1000*its;
+                    ExpenseChart.Width += 750*ChartXScale * weekssearched;
                     foreach (Expense i in Expenses)
                         TempItems.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
 
@@ -197,11 +216,11 @@ namespace alltheairgeadApp
                     ((LineSeries)ExpenseChart.Series[0]).IndependentAxis =
                         new DateTimeAxis
                         {
-                            Minimum = MinDisplayedDate,
+                            Minimum = MinExpenseDate,
                             Maximum = DateTime.Now,
                             Orientation = AxisOrientation.X,
-                            Interval = 1 / ChartScroll.ZoomFactor,
-                            IntervalType = DateTimeIntervalType.Days,
+                            IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Days : DateTimeIntervalType.Hours
+                            )
 
                         };
                     ((LineSeries)ExpenseChart.Series[0]).DependentRangeAxis =
@@ -210,42 +229,18 @@ namespace alltheairgeadApp
                             Orientation = AxisOrientation.Y,
                             ShowGridLines = true,
                             Location = AxisLocation.Right,
+                            Minimum = 0,
                         };
+                    ((LineSeries)ExpenseChart.Series[0]).Refresh();
                 }
-                ((LineSeries)ExpenseChart.Series[0]).Refresh();
-                UpdateExpenseAxis();
             }
-            else
-                (((LineSeries)ExpenseChart.Series[0]).IndependentAxis as DateTimeAxis).Interval = 1 / ChartScroll.ZoomFactor;
         }
-
-        public void UpdateExpenseAxis()
-        {/*
-            List<NameValueItem> TempItems = items;
-            TempItems.Sort(delegate(NameValueItem a, NameValueItem b)
-            {
-                if (a.Value > b.Value)
-                    return 1;
-                else if (a.Value < b.Value)
-                    return -1;
-                else
-                    return 0;
-            });
-            ((LineSeries)FixedAxisChart.Series[0]).DependentRangeAxis =
-                new LinearAxis
-                {
-                    Minimum = TempItems[0].Value,
-                    Maximum = TempItems[TempItems.Count - 1].Value,
-                    Orientation = AxisOrientation.Y,
-                    Interval = (TempItems[TempItems.Count - 1].Value - TempItems[0].Value) / 5,
-                };*/
-        }
-
-        public async void DataPointTapped(Object sender, SelectionChangedEventArgs e)
+        
+        public void DataPointTapped(Object sender, SelectionChangedEventArgs e)
         {
-            IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
+            //IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
             int Id = ((sender as LineSeries).SelectedItem as NameValueItem).Id;
-            Expense NewExpense = await ExpenseTable.LookupAsync(Id);
+            //Expense NewExpense = await ExpenseTable.LookupAsync(Id);
         }
 
         public async void ChartScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
@@ -254,9 +249,7 @@ namespace alltheairgeadApp
                 await UpdateExpenseChart();
 
         }
-
-        #endregion
-
+        
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             ExpenseService ExpenseService = new ExpenseService();
@@ -276,8 +269,83 @@ namespace alltheairgeadApp
                 MessageDialog Dialog = new MessageDialog("Saving Failed");
                 await Dialog.ShowAsync();
             }
-
-
         }
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomAccountService AccountService = new CustomAccountService();
+            AccountService.Logout();
+
+            MinExpenseDate = DateTime.Now.Date;
+            items.Clear();
+            ((LineSeries)ExpenseChart.Series[0]).Refresh();
+            if (!Frame.Navigate(typeof(LoginPage)))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
+            MessageDialog Dialog = new MessageDialog("Logged out");
+            await Dialog.ShowAsync();
+        }
+
+        
+        // Called on ManipulationDelta event detected on X axis rectangle. Used to change axis scale easily
+        private void ChartScroll_ManipulationXDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (Math.Abs(e.Delta.Scale - 1.0) >= 0.01)
+            {
+                if (ChartXScale <= MaxChartXScale && ChartXScale >= MinChartXScale)
+                {
+                    ChartXScale *= e.Delta.Scale;
+                    ExpenseChart.Width = 750 * ChartXScale * ((DateTime.Now.Date - MinExpenseDate).Days / 7);
+
+                    if (ChartXScale > ChartXScaleIntervalThresh)
+                        ((ExpenseChart.Series[0] as LineSeries).IndependentAxis as DateTimeAxis).IntervalType = DateTimeIntervalType.Hours;
+                    else
+                        ((ExpenseChart.Series[0] as LineSeries).IndependentAxis as DateTimeAxis).IntervalType = DateTimeIntervalType.Days;
+                }
+                else if (ChartXScale < MinChartXScale)
+                {
+                    ChartXScale = MinChartXScale;
+                }
+                else if (ChartXScale > MaxChartXScale)
+                {
+                    ChartXScale = MaxChartXScale;
+                }
+            }
+
+            double NewPosition = ChartScroll.HorizontalOffset * ChartXScale + e.Delta.Translation.X;
+            ChartScroll.ChangeView(NewPosition, ChartScroll.VerticalOffset, ChartScroll.ZoomFactor, true);
+        }
+
+        private void ChartScroll_ManipulationYDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (Math.Abs(e.Delta.Scale - 1.0) >= 0.01)
+            {
+                if (ChartYScale <= MaxChartYScale && ChartYScale >= MinChartYScale)
+                {
+                    ChartYScale *= 1.0 + 0.5 * (e.Delta.Scale - 1.0);
+                    // Make sure the scale doesn't jump outside the bounds
+                    if (ChartYScale < MinChartYScale)
+                        ChartYScale = MinChartYScale;
+                    if (ChartYScale > MaxChartYScale)
+                        ChartYScale = MaxChartYScale;
+
+                    ExpenseChart.Height = PivotItem2.ActualHeight * ChartYScale;
+                }
+                else if (ChartYScale < MinChartYScale)
+                {
+                    ChartYScale = MinChartYScale;
+                    ExpenseChart.Height = PivotItem2.ActualHeight * ChartYScale;
+                }
+                else if (ChartYScale > MaxChartYScale)
+                {
+                    ChartYScale = MaxChartYScale;
+                    ExpenseChart.Height = PivotItem2.ActualHeight * ChartYScale;
+                }
+            }
+
+            double NewPosition = ChartScroll.VerticalOffset * ChartYScale + e.Delta.Translation.Y;
+            ChartScroll.ChangeView(ChartScroll.HorizontalOffset, NewPosition, ChartScroll.ZoomFactor, true);
+        }
+        
     }
 }

@@ -1,32 +1,48 @@
 ﻿<Page
-    x:Class="alltheairgeadApp.PivotPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:alltheairgeadApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:data="using:alltheairgeadApp.Data"
-    mc:Ignorable="d"
-    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+
+    xmlns:Chart="using:Telerik.UI.Xaml.Controls.Chart"
+    x:Class="alltheairgeadApp.PivotPage"
+
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Mode=Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
-                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
-                    <CommonNavigationTransitionInfo IsStaggeringEnabled="True"/>
-                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                <CommonNavigationTransitionInfo IsStaggeringEnabled="True"/>
             </NavigationThemeTransition>
         </TransitionCollection>
     </Page.Transitions>
 
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Uid="LogoutButton" x:Name="LogoutButton" Label="Logout" Click="LogoutButton_Click"/>
+            </CommandBar.SecondaryCommands>
+            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" Click="AddAppBarButton_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
+
     <Grid>
-        <Pivot x:Uid="Pivot" Title="All the Airgead" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
+        <Pivot x:Uid="Pivot" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
+
+            <Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" FontSize="70" Text="{Binding}" />
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+            
             <!--Pivot item one-->
             <PivotItem
-                x:Uid="PivotItem1"
-                Margin="20,0,20,0"
-                Header="Entry"
-                CommonNavigationTransitionInfo.IsStaggerElement="True">
+				x:Uid="PivotItem1"
+				Margin="20,0,20,0"
+				Header="Add Expense"
+				CommonNavigationTransitionInfo.IsStaggerElement="True">
                 <!--Double line list with text wrapping-->
                 <StackPanel Width ="250" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Height="40">
@@ -42,7 +58,10 @@
                         <ComboBoxItem Content="College"/>
                         <ComboBoxItem Content="Other"/>
                     </ComboBox>
-                    <TextBox x:Name="Price" Margin="0,0,0,5" InputScope="CurrencyAmountAndSymbol" TextWrapping="Wrap" PlaceholderText="€" Width="250"/>
+                    <StackPanel Width="250" Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBox x:Name="Price" InputScope="Number" TextWrapping="Wrap" PlaceholderText="€" Width="95" Margin="0,0,5,0"/>
+                        <TextBox x:Name="Priority" InputScope="Number" TextWrapping="NoWrap" PlaceholderText="Priority 1,2,3" Width="145" Margin="5,0,0,0"/>
+                    </StackPanel>
                     <TextBox x:Name="MoreInfo" Margin="0,5" TextWrapping="Wrap" PlaceholderText="More info..." Width="250"/>
                     <Button x:Name="SubmitButton" Content="Submit" Click="SubmitButton_Click" Height="58" Width="75"/>
                 </StackPanel>
@@ -50,79 +69,79 @@
 
             <!--Pivot item two-->
             <PivotItem
-                x:Uid="PivotItem2"
-                Margin="19,14.5,0,0"
-                Header="Chart"
-                DataContext="{Binding SecondGroup}"
-                d:DataContext="{Binding Groups[1], Source={d:DesignData Source=/DataModel/SampleData.json, Type=data:SampleDataSource}}">
+				x:Name="PivotItem2"
+				x:Uid="PivotItem2"
+				Header="Chart">
+
                 <!--Double line list no text wrapping-->
-                <ListView
-                    ItemsSource="{Binding Items}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    Loaded="SecondPivot_Loaded"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,9.5">
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Description}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <ScrollViewer Name="ChartScroll"
+                              HorizontalScrollMode="Enabled"
+                              VerticalScrollMode="Enabled"
+                              ZoomMode="Disabled"
+                              MinZoomFactor="1"
+                              MaxZoomFactor="4"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Hidden"
+                              VerticalAlignment="Bottom"
+                              HorizontalContentAlignment="Left"
+                              FlowDirection="RightToLeft"
+                              ViewChanged="ChartScroll_ViewChanged">
+                    <Grid FlowDirection="LeftToRight" VerticalAlignment="Bottom">
+
+                        <charting:Chart Name="ExpenseChart"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Width="0"
+                                    Height="{Binding ElementName=PivotItem2, Path=ActualHeight, Mode=OneWay}"
+                                    Margin="5,20,5,5"
+                                    FlowDirection="LeftToRight">
+                            
+                            <!-- Hide the legend information -->
+                            <charting:Chart.LegendStyle>
+                                <Style TargetType="FrameworkElement">
+                                    <Setter Property="Width" Value="0" />
+                                </Style>
+                            </charting:Chart.LegendStyle>
+
+                            <charting:LineSeries
+                                x:Name="TotalExpenses"
+                                Title="Total Expenses"
+                                IndependentValueBinding="{Binding Date}"
+                                DependentValueBinding="{Binding Value}"
+                                IsSelectionEnabled="True"
+                                SelectionChanged="DataPointTapped">
+                            </charting:LineSeries>
+                        </charting:Chart>
+                        <Rectangle
+                            x:Name="XAxisBox"
+                            VerticalAlignment="Bottom"
+                            Margin="0"
+                            Height="50"
+                            Width="{Binding ElementName=ExpenseChart, Path=Width, Mode=OneWay}"
+                            Fill="Transparent"
+                            ManipulationMode="All"
+                            ManipulationDelta="ChartScroll_ManipulationXDelta"/>
+                        <Rectangle
+                            x:Name="YAxisBox"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Height="{Binding ElementName=ExpenseChart, Path=Height, Mode=OneWay}"
+                            Width="50"
+                            Margin="0"
+                            Fill="Transparent"
+                            ManipulationMode="All"
+                            ManipulationDelta="ChartScroll_ManipulationYDelta"/>
+                    </Grid>
+                </ScrollViewer>
+
             </PivotItem>
             <!--Pivot item three-->
             <PivotItem
-                x:Uid="PivotItem3"
-                Margin="19,14.5,0,0"
-                Header="Daily View"
-                DataContext="{Binding SecondGroup}"
-                d:DataContext="{Binding Groups[1], Source={d:DesignData Source=/DataModel/SampleData.json, Type=data:SampleDataSource}}">
-                <!--Double line list no text wrapping-->
-                <ListView
-                    ItemsSource="{Binding Items}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    Loaded="SecondPivot_Loaded"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,9.5">
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Description}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </PivotItem>
+				x:Uid="PivotItem3"
+				Margin="0,0,0,0"
+				Header="Daily View"/>
 
         </Pivot>
     </Grid>
 
-    <Page.BottomAppBar>
-        <CommandBar>
-            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" Click="AddAppBarButton_Click" />
-            <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="SecondaryButton1" x:Name="SecondaryButton1" Label="secondary command 1" />
-                <AppBarButton x:Uid="SecondaryButton2" x:Name="SecondaryButton2" Label="secondary command 2" />
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
-    </Page.BottomAppBar>
 </Page>
