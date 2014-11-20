@@ -6,11 +6,12 @@
 
     var CurrentUserId = WebSecurity.CurrentUserId;
     var db = Database.Open("StarterSite");
-    var SelectAverageQuery = ("SELECT DISTINCT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
+   <!--var SelectAverageQuery = ("SELECT DISTINCT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
     var SelectUserDataQuery = ("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
     var SelectedData = db.Query(SelectAverageQuery);
-    var SelectedUserData = db.Query(SelectUserDataQuery);
-
+    var SelectedUserData = db.Query(SelectUserDataQuery);-->
+    var SelectedData = db.Query("SELECT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
+    var SelectedUserData = db.Query("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
 
 
 
@@ -18,15 +19,15 @@
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Compare";
 
-    var compChart = new Chart(width: 600, height: 400);
+    var compChart = new Chart(width: 600, height: 400, themePath: "MyChartTheme.xml");
         compChart=compChart.AddTitle("Comparison");
         compChart = compChart.AddSeries("Average", chartType:"Line",
             xValue: SelectedData, xField: "Category",
             yValues: SelectedData, yFields: "TotalPrice");
-        compChart = compChart.AddSeries("User", chartType:"Line",
+            compChart = compChart.AddSeries("User", chartType:"Line",
             xValue: SelectedUserData, xField: "Category",
-            yValues: SelectedUserData, yFields: "TotalPrice");
-            
+            yValues: SelectedUserData, yFields: "TotalPrice"); 
+           <!--compChart=compChart.Write();--> 
         
 
 }
@@ -41,8 +42,7 @@
     <body>
         <h1>This will do a basic comparison between you and all other users of he site and app.</h1>
         <div>
-           compChart=compChart.Write();
-        
+           @compChart.Write()   
         </div>
     </body>
 </html>
