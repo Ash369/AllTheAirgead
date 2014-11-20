@@ -198,6 +198,7 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CustomLoginController.cs" />
     <Compile Include="Controllers\CustomRegistrationController.cs" />
+    <Compile Include="Controllers\EmailCheckController.cs" />
     <Compile Include="Controllers\ExpenseController.cs" />
     <Compile Include="Controllers\PublicContentController.cs" />
     <Compile Include="Controllers\PublicHelpController.cs" />

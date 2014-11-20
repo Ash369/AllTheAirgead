@@ -25,7 +25,7 @@ namespace alltheairgeadmobileService.Controllers
             {
                 return this.Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid email format");
             }
-            else if (Request.Password.Length < 8)
+            else if (Request.Password.Length < 6)
             {
                 return this.Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid password (at least 8 chars required)");
             }
