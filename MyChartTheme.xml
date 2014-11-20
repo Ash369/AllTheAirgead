@@ -1,0 +1,44 @@
+﻿<Chart BackColor="#C9DC87" 
+       BackGradientStyle="TopBottom" 
+       BorderColor="187, 187, 187, 187" 
+       BorderWidth="2"
+       BorderlineColor="#C9DC87" 
+       BorderlineDashStyle="NotSet" 
+       Palette="BrightPastel"> 
+    <ChartAreas> 
+    <ChartArea Name="Default" 
+        _Template_="All" 
+        BackColor="Transparent" 
+        BackSecondaryColor="White" 
+        BorderColor="64, 64, 64, 64" 
+        BorderDashStyle="Solid" 
+        ShadowColor="Transparent"> 
+        <AxisY LineColor="64, 64, 64, 64"> 
+            <MajorGrid Interval="Auto" 
+            LineColor="64, 64, 64, 64" /> 
+            <LabelStyle Font="Trebuchet MS, 8.25pt, style=Bold" /> 
+        </AxisY> 
+        <AxisX LineColor="64, 64, 64, 64"> 
+        <MajorGrid LineColor="64, 64, 64, 64" /> 
+        <LabelStyle Font="Trebuchet MS, 8.25pt, style=Bold" /> 
+    </AxisX> 
+        <Area3DStyle Inclination="15" 
+        IsClustered="False" 
+        IsRightAngleAxes="False" 
+        Perspective="10" 
+        Rotation="10" 
+        WallWidth="0" /> 
+    </ChartArea> 
+    </ChartAreas> 
+    <Legends> 
+        <Legend _Template_="All" 
+        Alignment="Center" 
+        BackColor="Transparent" 
+        Docking="Bottom" 
+        Font="Trebuchet MS, 8.25pt, style=Bold" 
+        IsTextAutoFit ="False" 
+        LegendStyle="Row"> 
+        </Legend> 
+    </Legends> 
+    <BorderSkin SkinStyle="Emboss" /> 
+</Chart>
