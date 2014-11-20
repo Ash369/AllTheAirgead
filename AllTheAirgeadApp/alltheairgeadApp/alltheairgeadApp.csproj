@@ -104,6 +104,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataObjects\Account.cs" />
+    <Compile Include="DataObjects\Category.cs" />
     <Compile Include="DataObjects\Expense.cs" />
     <Compile Include="ItemPage.xaml.cs">
       <DependentUpon>ItemPage.xaml</DependentUpon>
@@ -124,6 +125,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Fonts\OrangeJuiceCredit.txt" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
@@ -146,6 +148,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ApplicationInsights.config" />
+    <Content Include="Assets\Fonts\orangejuice.ttf" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +188,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WinRTXamlToolkit.Controls.DataVisualization.WindowsPhone.1.7.4.0\lib\wpa\WinRTXamlToolkit.Controls.DataVisualization.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
+      <Name>Behaviors SDK %28XAML%29</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

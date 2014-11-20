@@ -7,6 +7,8 @@ using Windows.UI.Popups;
 using Windows.Security.Credentials;
 using Newtonsoft.Json.Linq;
 using Microsoft.WindowsAzure.MobileServices;
+using Windows.UI.Xaml.Controls;
+using System.Collections.Generic;
 
 namespace alltheairgeadApp.Services
 {
@@ -106,6 +108,24 @@ namespace alltheairgeadApp.Services
                 await Dialog.ShowAsync();
             }
             return result;
+        }
+
+        public Boolean Logout()
+        {
+            PasswordVault Vault = new PasswordVault();
+            List<PasswordCredential> Credentials = null;
+            try
+            {
+                Credentials = Vault.FindAllByUserName(App.alltheairgeadClient.CurrentUser.UserId).ToList();
+                foreach (PasswordCredential Credential in Credentials)
+                    Vault.Remove(Credential);
+            }
+            catch
+            {
+            }
+            App.alltheairgeadClient.CurrentUser = null;
+
+            return true;
         }
     }
 }

@@ -41,8 +41,8 @@ namespace alltheairgeadApp
             //"http://localhost:58202",
             //"http://alltheairgeadmobile.azure-mobile.net/",
             //"http://169.254.80.80:58202",
-            "http://192.168.1.33:58202",
-            //"https://alltheairgeadmobile.azure-mobile.net/",
+            //"http://192.168.1.33:58202",
+            "https://alltheairgeadmobile.azure-mobile.net/",
             "lcuZZgCZmiwgIzVWDDuPErwSiBpZqA23"
         );
 

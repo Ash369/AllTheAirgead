@@ -102,7 +102,11 @@ namespace alltheairgeadApp
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
+            // Disable the button after press to stop multiple presses
+            LoginButton.IsEnabled = false;
+
             CustomAccountService AccountService = new CustomAccountService();
+
             // Login the user and then load data from the mobile service.
             Boolean LoginVerbose = true;
             if (await AccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
@@ -111,8 +115,10 @@ namespace alltheairgeadApp
                 {
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
-
             }
+
+            // Reenable the button to prevent the user from getting stuck for any reason
+            LoginButton.IsEnabled = true;
         }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)

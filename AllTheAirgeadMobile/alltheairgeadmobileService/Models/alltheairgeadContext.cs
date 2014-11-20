@@ -31,6 +31,7 @@ namespace alltheairgeadmobileService.Models
         public System.Data.Entity.DbSet<webpages_Membership> Memberships { get; set; }
         public System.Data.Entity.DbSet<UserProfile> UserProfiles { get; set; }
         public System.Data.Entity.DbSet<Expense> Expenses { get; set; }
+        public System.Data.Entity.DbSet<Catagory> Categories { get; set; }
 
         /*
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -67,8 +68,6 @@ namespace alltheairgeadmobileService.Models
                 throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
             }
         }
-
-        //public System.Data.Entity.DbSet<alltheairgeadmobileService.DataObjects.ExpenseDto> ExpenseDtoes { get; set; }
     }
 }
 
