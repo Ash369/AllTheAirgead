@@ -14,22 +14,13 @@ namespace alltheairgeadmobileService.Controllers
 {
     [AuthorizeLevel(AuthorizationLevel.User)]
     public class ExpenseController : TableController<ExpenseDto>
-    {/*
-        protected override void Initialize(HttpControllerContext controllerContext)
-        {
-            base.Initialize(controllerContext);
-            alltheairgeadContext context = new alltheairgeadContext(Services.Settings["ExistingDbConnectionString"]);
-            //alltheairgeadmobileContext context = new alltheairgeadmobileContext();
-            DomainManager = new EntityDomainManager<Expense>(context, Request, Services);
-        }
-*/
+    {
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
             //modify the context to use the constructor that will take a connection string - stored in web.config
             alltheairgeadContext context = new alltheairgeadContext(Services.Settings["ExistingDbConnectionString"]);
 
-            // DomainManager = new EntityDomainManager<Expense>(context, Request, Services);
             // set DomainManger to a new one that we created
             DomainManager = new SimpleMappedEntityDomainManager<ExpenseDto, Expense>(
               context,
@@ -54,6 +45,7 @@ namespace alltheairgeadmobileService.Controllers
                 throw new HttpResponseException(System.Net.HttpStatusCode.Unauthorized);
             }
         }
+
         // GET tables/Expense
         public IQueryable<ExpenseDto> GetAllExpense()
         {
