@@ -39,7 +39,6 @@ namespace alltheairgeadApp
         // test project for debugging purposes.
         public static MobileServiceClient alltheairgeadClient = new MobileServiceClient(
             //"http://localhost:58202",
-            //"http://alltheairgeadmobile.azure-mobile.net/",
             //"http://169.254.80.80:58202",
             //"http://192.168.1.33:58202",
             "https://alltheairgeadmobile.azure-mobile.net/",
@@ -83,7 +82,7 @@ namespace alltheairgeadApp
                 // Associate the frame with a SuspensionManager key.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-                // TODO: Change this value to a cache size that is appropriate for your application.
+                // All pahes spawn from main page. Only need one page in cache at any time.
                 rootFrame.CacheSize = 1;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
@@ -119,19 +118,22 @@ namespace alltheairgeadApp
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                if (!(await FindStoredCredentials()))
+                // When the navigation stack isn't restored navigate to the first page,
+                // configuring the new page by passing required information as a navigation
+                // parameter.
+
+                // Navigate to the login page when there is no valid credentials stored
+                if (!(await CustomAccountService.FindStoredCredentials()))
                 {
                     if(!rootFrame.Navigate(typeof(LoginPage), e.Arguments))
                     {
                         throw new Exception("Failed to create login page");
                     }
                 }
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter.
+                // Navigate to the main page if a login credential is retrieved
                 else if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
                 {
-                    //throw new Exception("Failed to create initial page");
+                    throw new Exception("Failed to create initial page");
                 }
             }
 
@@ -161,49 +163,6 @@ namespace alltheairgeadApp
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
             deferral.Complete();
-        }
-
-        private async Task<bool> FindStoredCredentials()
-        {
-            PasswordVault Vault = new PasswordVault();
-            PasswordCredential Credential = null;
-            while (Credential == null)
-            {
-                try
-                {
-                    Credential = Vault.RetrieveAll().FirstOrDefault();
-
-                    App.alltheairgeadClient.CurrentUser = new MobileServiceUser(Credential.UserName);
-                    Credential.RetrievePassword();
-                    App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken = Credential.Password;
-
-                    try
-                    {
-                        await App.alltheairgeadClient.GetTable<Expense>().Take(1).ToListAsync();
-                    }
-                    catch (MobileServiceInvalidOperationException ex)
-                    {
-                        if (ex.Response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                        {
-                            Vault.Remove(Credential);
-                            Credential = null;
-                            continue;
-                        }
-                        else if (ex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                        {
-                            // Deal with offline
-                        }
-                    }
-
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            MessageDialog Dialog = new MessageDialog("Signed in as " + Credential.UserName);
-            await Dialog.ShowAsync();
-            return true;
         }
     }
 }

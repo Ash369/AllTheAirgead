@@ -17,6 +17,6 @@ namespace alltheairgeadmobileService.DataObjects
 
         public DateTime? Time { get; set; }
 
-        public short? Priority { get; set; }
+        public Byte? Priority { get; set; }
     }
 }

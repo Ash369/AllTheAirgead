@@ -5,7 +5,7 @@
     var data = db.Query("SELECT Date, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Month(Date) = Month(getdate()) GROUP BY Date");
     <!--var DinCat = data.Select("Category");-->
     
-    var myChart = new Chart(width: 600, height: 400, themePath: "MyChartTheme.xml");
+    var myChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         myChart=myChart.AddTitle("Monthly Costs: ");
         myChart = myChart.AddSeries("Default", chartType:"Line",
             xValue: data, xField: "Date",

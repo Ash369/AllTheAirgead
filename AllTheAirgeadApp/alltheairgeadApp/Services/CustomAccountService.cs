@@ -2,25 +2,30 @@
 using System.Text;
 using System.Linq;
 using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.Security.Credentials;
+using Windows.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using Microsoft.WindowsAzure.MobileServices;
-using Windows.UI.Xaml.Controls;
-using System.Collections.Generic;
+using alltheairgeadApp.DataObjects;
 
 namespace alltheairgeadApp.Services
 {
-    public class CustomAccountService
+    public static class CustomAccountService
     {
-        string Provider = "custom";
-        public async Task<Boolean> Register(string email, string password)
+        private static string Provider = "custom";
+        public static async Task<Boolean> Register(string email, string password)
         {
             string message;
             Boolean result;
             try
             {
+                if (!EmailValidation.EmailValidator.Validate(email, true))
+                    throw new Exception("Email not in correct format");
+                else if (password.Length < 6)
+                    throw new Exception("Password must be at least 6 characters");
                 string HttpRequestBodyString = "{Email:\"" + email + "\", Password:\"" + password + "\"}";
                 StringContent HttpRequestBody = new StringContent(HttpRequestBodyString, Encoding.UTF8, "application/json");
                 var response = await App.alltheairgeadClient.InvokeApiAsync("CustomRegistration", HttpRequestBody, System.Net.Http.HttpMethod.Post, null, null);
@@ -37,7 +42,7 @@ namespace alltheairgeadApp.Services
                 }
                 result = true;
             }
-            catch (MobileServiceInvalidOperationException ex)
+            catch (Exception ex)
             {
                 message = ex.Message;
                 result = false;
@@ -47,7 +52,7 @@ namespace alltheairgeadApp.Services
             return result;
         }
 
-        public async Task<Boolean> Login(string email, string password, Boolean verbose)
+        public static async Task<Boolean> Login(string email, string password, Boolean verbose)
         {
             PasswordVault Vault = new PasswordVault();
             PasswordCredential Credential = new PasswordCredential();
@@ -110,7 +115,7 @@ namespace alltheairgeadApp.Services
             return result;
         }
 
-        public Boolean Logout()
+        public static Boolean Logout()
         {
             PasswordVault Vault = new PasswordVault();
             List<PasswordCredential> Credentials = null;
@@ -125,6 +130,66 @@ namespace alltheairgeadApp.Services
             }
             App.alltheairgeadClient.CurrentUser = null;
 
+            return true;
+        }
+
+        public static async Task<Boolean> EmailAvailableCheck(string Email)
+        {
+            Dictionary<string, string> Request = new Dictionary<string, string>();
+            Request.Add("Email", Email);
+            try
+            {
+                var response = await App.alltheairgeadClient.InvokeApiAsync("EmailCheck", null, HttpMethod.Get, null, Request);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static async Task<bool> FindStoredCredentials()
+        {
+            PasswordVault Vault = new PasswordVault();
+            PasswordCredential Credential = null;
+            while (Credential == null)
+            {
+                try
+                {
+                    Credential = Vault.RetrieveAll().FirstOrDefault();
+
+                    App.alltheairgeadClient.CurrentUser = new MobileServiceUser(Credential.UserName);
+                    Credential.RetrievePassword();
+                    App.alltheairgeadClient.CurrentUser.MobileServiceAuthenticationToken = Credential.Password;
+
+                    try
+                    {
+                        await App.alltheairgeadClient.GetTable<Expense>().Take(1).ToListAsync();
+                    }
+                    catch (MobileServiceInvalidOperationException ex)
+                    {
+                        if (ex.Response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            Vault.Remove(Credential);
+                            Credential = null;
+                            continue;
+                        }
+                        else if (ex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            // Deal with offline
+                        }
+                    }
+
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            MessageDialog Dialog = new MessageDialog("Signed in as " + Credential.UserName);
+            await Dialog.ShowAsync();
             return true;
         }
     }
