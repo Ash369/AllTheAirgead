@@ -112,11 +112,9 @@ namespace alltheairgeadApp
             // Disable the button after press to stop multiple presses
             LoginButton.IsEnabled = false;
 
-            CustomAccountService AccountService = new CustomAccountService();
-
             // Login the user and then load data from the mobile service.
             Boolean LoginVerbose = true;
-            if (await AccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
+            if (await CustomAccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
                 {
@@ -130,8 +128,7 @@ namespace alltheairgeadApp
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            CustomAccountService AccountService = new CustomAccountService();
-            if (await AccountService.Register(EmailRegister.Text, PasswordRegister.Password))
+            if (await CustomAccountService.Register(EmailRegister.Text, PasswordRegister.Password))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
                 {
@@ -143,13 +140,11 @@ namespace alltheairgeadApp
         // Called when text in the email registration box is changed. Check that the input is valid and inform the user.
         private async void EmailRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CustomAccountService AccountService = new CustomAccountService();
-
             // Check that the email is a valid format
             if (EmailValidator.Validate(EmailRegister.Text))
             {
                 // Check that the email has not already been registered
-                if (await AccountService.EmailAvailableCheck(EmailRegister.Text))
+                if (await CustomAccountService.EmailAvailableCheck(EmailRegister.Text))
                 {
                     // Turn on the light telling the user that the entry is valid
                     EmailValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.LawnGreen);
