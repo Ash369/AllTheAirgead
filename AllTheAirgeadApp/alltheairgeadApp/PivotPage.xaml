@@ -24,7 +24,7 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Uid="LogoutButton" x:Name="LogoutButton" Label="Logout" Click="LogoutButton_Click"/>
             </CommandBar.SecondaryCommands>
-            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" Click="AddAppBarButton_Click" />
+            <AppBarButton x:Uid="RefreshAppBarButton" x:Name="RefreshAppBarButton" Label="Refresh" Icon="Refresh" Click="RefreshAppBarButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 

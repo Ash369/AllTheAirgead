@@ -138,7 +138,7 @@ namespace alltheairgeadApp
 
         #endregion
         
-        public async Task GetCategoryData()
+        private async Task GetCategoryData()
         {
             List<string> CategoryNames = new List<string>();
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
@@ -148,7 +148,7 @@ namespace alltheairgeadApp
             CategoryBox.ItemsSource = CategoryNames;
         }
 
-        public async Task UpdateExpenseChart()
+        private async Task UpdateExpenseChart()
         {
             if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
             {
@@ -198,29 +198,25 @@ namespace alltheairgeadApp
             }
         }
 
+        private async Task RefreshExpenseChart()
+        {
+            List<Expense> Expenses;
+            IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
+            
+            items.Clear();
+            Expenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) && (a.Date <= DateTime.Now)).OrderByDescending(a => a.Date).ToListAsync();
+            foreach (Expense i in Expenses)
+                items.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
+
+            ((LineSeries)ExpenseChart.Series[0]).Refresh();
+        }
+
         /// <summary>
         /// Adds an item to the list when the app bar button is clicked.
         /// </summary>
-        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
-        {/*
-            string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
-            var group = this.DefaultViewModel[groupName] as SampleDataGroup;
-            var nextItemId = group.Items.Count + 1;
-            var newItem = new SampleDataItem(
-                string.Format(CultureInfo.InvariantCulture, "Group-{0}-Item-{1}", this.pivot.SelectedIndex + 1, nextItemId),
-                string.Format(CultureInfo.CurrentCulture, this.resourceLoader.GetString("NewItemTitle"), nextItemId),
-                string.Empty,
-                string.Empty,
-                this.resourceLoader.GetString("NewItemDescription"),
-                string.Empty);
-
-            group.Items.Add(newItem);
-
-            // Scroll the new item into view.
-            var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
-            var listView = container.ContentTemplateRoot as ListView;
-            listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
-        */
+        private async void RefreshAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            await RefreshExpenseChart();
         }
 
         /// <summary>
@@ -235,16 +231,6 @@ namespace alltheairgeadApp
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
-          */
-        }
-
-        /// <summary>
-        /// Loads the content for the second pivot item when it is scrolled into view.
-        /// </summary>
-        private void SecondPivot_Loaded(object sender, RoutedEventArgs e)
-        {/*
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
-            this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
           */
         }
 
@@ -312,6 +298,8 @@ namespace alltheairgeadApp
             }
             await new MessageDialog(message).ShowAsync();
 
+            // Refresh the chart with the new data
+            await RefreshExpenseChart();
             // Reenable when finished
             SubmitButton.IsEnabled = true;
         }
