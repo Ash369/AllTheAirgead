@@ -29,7 +29,7 @@ namespace alltheairgeadApp
 
         private List<Category> Categories;
         private static readonly IList<string> PriorityLevels = new ReadOnlyCollection<string>
-            (new List<string> { "Low", "Medium", "High" });
+            (new List<string> { "High", "Medium", "Low" });
 
         DateTime MinExpenseDate = DateTime.Now.Date;
         List<NameValueItem> items = new List<NameValueItem>();

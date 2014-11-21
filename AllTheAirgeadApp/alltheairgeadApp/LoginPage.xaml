@@ -37,7 +37,7 @@
                 
                 <PivotItem Header="Login">
                     <StackPanel Margin="0,50">
-                        <TextBox x:Name="EmailLogin" InputScope="EmailSmtpAddress" HorizontalAlignment="Center" Width="300" PlaceholderText="Email" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
+                        <TextBox x:Name="EmailLogin" InputScope="EmailSmtpAddress" HorizontalAlignment="Center" Width="300" PlaceholderText="Email Address" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
                         <PasswordBox x:Name="PasswordLogin" HorizontalAlignment="Center" Width="300" PlaceholderText="Password" IsPasswordRevealButtonEnabled="True"/>
                         <Grid Width="300" HorizontalAlignment="Center">
                             <Button x:Name="LoginButton" Click="LoginButton_Click" Content="Login" Width="100"/>
@@ -47,10 +47,17 @@
 
                 <PivotItem Header="Register">
                     <StackPanel Margin="0,50">
-                        <TextBox x:Name="EmailRegister" HorizontalAlignment="Center" Width="300" PlaceholderText="Email" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
-                        <PasswordBox x:Name="PasswordRegister" HorizontalAlignment="Center" Width="300" PlaceholderText="Password" IsPasswordRevealButtonEnabled="True" />
+                        <TextBox x:Name="EmailRegister" HorizontalAlignment="Center" Width="300" PlaceholderText="Email Address" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" TextChanged="EmailRegister_TextChanged"/>
+                        <PasswordBox x:Name="PasswordRegister" HorizontalAlignment="Center" Width="300" PlaceholderText="Password" Margin="0,5,0,2" PasswordChanged="PasswordRegister_PasswordChanged"/>
+                        <PasswordBox x:Name="PasswordConfirmationRegister" HorizontalAlignment="Center" Width="300" PlaceholderText="Confirm Password" Margin="0,2,0,2" PasswordChanged="PasswordConfirmationRegister_PasswordChanged"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Rectangle Name="EmailValidLight" Height="10" Width="100" Fill="Gray"/>
+                            <Rectangle Name="PasswordValidLight" Height="10" Width="100" Fill="Gray"/>
+                            <Rectangle Name="PasswordConfirmValidLight" Height="10" Width="100" Fill="Gray"/>
+                        </StackPanel>
+                        <StackPanel Name="RegisterMessages" Width="300" />
                         <Grid Width="300" HorizontalAlignment="Center">
-                            <Button x:Name="RegisterButton" Click="RegisterButton_Click" Content="Register" Width="100"/>
+                            <Button x:Name="RegisterButton" Click="RegisterButton_Click" Content="Register" Width="100" IsEnabled="False"/>
                         </Grid>
                     </StackPanel>
                 </PivotItem>

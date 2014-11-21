@@ -2,13 +2,13 @@
 using System.Text;
 using System.Linq;
 using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.Security.Credentials;
+using Windows.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using Microsoft.WindowsAzure.MobileServices;
-using Windows.UI.Xaml.Controls;
-using System.Collections.Generic;
 
 namespace alltheairgeadApp.Services
 {
@@ -21,6 +21,10 @@ namespace alltheairgeadApp.Services
             Boolean result;
             try
             {
+                if (!EmailValidation.EmailValidator.Validate(email, true))
+                    throw new Exception("Email not in correct format");
+                else if (password.Length < 6)
+                    throw new Exception("Password must be at least 6 characters");
                 string HttpRequestBodyString = "{Email:\"" + email + "\", Password:\"" + password + "\"}";
                 StringContent HttpRequestBody = new StringContent(HttpRequestBodyString, Encoding.UTF8, "application/json");
                 var response = await App.alltheairgeadClient.InvokeApiAsync("CustomRegistration", HttpRequestBody, System.Net.Http.HttpMethod.Post, null, null);
@@ -37,7 +41,7 @@ namespace alltheairgeadApp.Services
                 }
                 result = true;
             }
-            catch (MobileServiceInvalidOperationException ex)
+            catch (Exception ex)
             {
                 message = ex.Message;
                 result = false;
@@ -126,6 +130,23 @@ namespace alltheairgeadApp.Services
             App.alltheairgeadClient.CurrentUser = null;
 
             return true;
+        }
+
+        public async Task<Boolean> EmailAvailableCheck(string Email)
+        {
+            Dictionary<string, string> Request = new Dictionary<string, string>();
+            Request.Add("Email", Email);
+            try
+            {
+                var response = await App.alltheairgeadClient.InvokeApiAsync("EmailCheck", null, HttpMethod.Get, null, Request);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

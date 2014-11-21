@@ -2,8 +2,10 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media;
 using Windows.ApplicationModel.Resources;
 using Microsoft.WindowsAzure.MobileServices;
+using EmailValidation;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 
@@ -19,6 +21,11 @@ namespace alltheairgeadApp
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+
+        private TextBlock EmailErrorText;
+        private TextBlock EmailTakenText;
+        private TextBlock PasswordErrorText;
+        private TextBlock PasswordShortText;
 
         public LoginPage()
         {
@@ -131,6 +138,136 @@ namespace alltheairgeadApp
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
             }
+        }
+
+        // Called when text in the email registration box is changed. Check that the input is valid and inform the user.
+        private async void EmailRegister_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CustomAccountService AccountService = new CustomAccountService();
+
+            // Check that the email is a valid format
+            if (EmailValidator.Validate(EmailRegister.Text))
+            {
+                // Check that the email has not already been registered
+                if (await AccountService.EmailAvailableCheck(EmailRegister.Text))
+                {
+                    // Turn on the light telling the user that the entry is valid
+                    EmailValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.LawnGreen);
+                    // Remove the error messages if they were active
+                    if (RegisterMessages.Children.Contains(EmailErrorText))
+                        RegisterMessages.Children.Remove(EmailErrorText);
+                    if (RegisterMessages.Children.Contains(EmailTakenText))
+                        RegisterMessages.Children.Remove(EmailTakenText);
+
+                    // Enable the register button when everything is valid
+                    if (PasswordRegister.Password.Length >= 6 && PasswordRegister.Password == PasswordConfirmationRegister.Password)
+                        RegisterButton.IsEnabled = true;
+                }
+                // If the email is already registered tell the user
+                else
+                {
+                    // Turn off the valid light
+                    EmailValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.Gray);
+                    // Display the error message
+                    if (!RegisterMessages.Children.Contains(EmailTakenText))
+                    {
+                        EmailTakenText = new TextBlock();
+                        EmailTakenText.Text = "Email address already registered";
+                        RegisterMessages.Children.Add(EmailTakenText);
+                        // Disable the register button
+                        RegisterButton.IsEnabled = false;
+                    }
+                }
+            }
+            // If the input is not a valid email format, inform the user by displaying a message.
+            else
+            {
+                var a = resourceLoader;
+                // Turn off the green light if it was on
+                EmailValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.Gray);
+                // Display a message if it is not already displayed
+                if (!RegisterMessages.Children.Contains(EmailErrorText))
+                {
+                    // Create text block to display
+                    EmailErrorText = new TextBlock();
+                    EmailErrorText.Text = "Email Address invalid";
+                    // Add it to the Stack Panel for registration messages
+                    RegisterMessages.Children.Add(EmailErrorText);
+                    // Disable the register button if data isn't valid
+                    RegisterButton.IsEnabled = false;
+                }
+            }
+        }
+
+        // Called by a change in the password registration box. Check that the password is at least the minimum password length
+        private void PasswordRegister_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            // Check that the password is the required length
+            if (PasswordRegister.Password.Length >= 6)
+            {
+                // Turn on the light signalling that the password is acceptable
+                PasswordValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.LawnGreen);
+                // Remove the error message if it has been displayed
+                if (RegisterMessages.Children.Contains(PasswordShortText))
+                    RegisterMessages.Children.Remove(PasswordShortText);
+
+                // Enable the register button if all else has been satisfied
+                if (EmailValidator.Validate(EmailRegister.Text) && PasswordRegister.Password == PasswordConfirmationRegister.Password)
+                    RegisterButton.IsEnabled = true;
+            }
+            // If the password is not valid, inform the user with a helpful message
+            else
+            {
+                // Turn off the valid light
+                PasswordValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.Gray);
+                // Display a message if it was not already displayed
+                if (!RegisterMessages.Children.Contains(PasswordShortText))
+                {
+                    // Create the text block
+                    PasswordShortText = new TextBlock();
+                    PasswordShortText.Text = "Password must be at least 6 characters";
+                    // Add it to the Stack Panel provided for messages
+                    RegisterMessages.Children.Add(PasswordShortText);
+                    // Disable the register button if data isn't valid
+                    RegisterButton.IsEnabled = false;
+                }
+            }
+
+        }
+
+        // Called by a change in the password confirmation field. Check that the two passwords match
+        private void PasswordConfirmationRegister_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            // Check that the passowrds match
+            if (PasswordRegister.Password == PasswordConfirmationRegister.Password)
+            {
+                // Turn on the password confirmation valid light to inform the user that the password is correct
+                PasswordConfirmValidLight.Fill = new SolidColorBrush(Windows.UI.Colors.LawnGreen);
+                // Remove the displayed error messages
+                if (RegisterMessages.Children.Contains(PasswordErrorText))
+                    RegisterMessages.Children.Remove(PasswordErrorText);
+
+                // Enable the register button when all data is valid
+                if (EmailValidator.Validate(EmailRegister.Text) && PasswordRegister.Password.Length >= 6)
+                    RegisterButton.IsEnabled = true;
+            }
+            // If the passwords don't match, inform the user
+            else
+            {
+                // Show an error message if not already displayed
+                if (!RegisterMessages.Children.Contains(PasswordErrorText))
+                {
+                    // Create the error message
+                    PasswordErrorText = new TextBlock();
+                    PasswordErrorText.Text = "Passwords do not match";
+                    // Add it to the stack panel for display
+                    RegisterMessages.Children.Add(PasswordErrorText);
+                    // Disable the register button if data isn't valid
+                    RegisterButton.IsEnabled = false;
+                }
+            }
+
+
         }
     }
 }
