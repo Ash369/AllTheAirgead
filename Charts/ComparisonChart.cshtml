@@ -1,15 +1,17 @@
 ﻿@{
     var CurrentUserId = WebSecurity.CurrentUserId;
     var db = Database.Open("StarterSite");
-   var SelectAverageQuery = ("SELECT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
+   var SelectAverageQuery = ("SELECT UserId, Category, Price FROM Expense");
     var SelectUserDataQuery = ("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
     var SelectedData = db.Query(SelectAverageQuery);
     var SelectedUserData = db.Query(SelectUserDataQuery);
 
-    Layout = "~/_SiteLayout.cshtml";
-    Page.Title = "Compare";
+    
 
-    var compChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
+
+
+
+    var compChart = new Chart(width: 800, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         compChart=compChart.AddTitle("Comparison");
         compChart = compChart.AddSeries("Average", chartType:"Column",
             xValue: SelectedData, xField: "Category",

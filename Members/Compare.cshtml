@@ -6,7 +6,7 @@
 
     var CurrentUserId = WebSecurity.CurrentUserId;
     var db = Database.Open("StarterSite");
-    var SelectAverageQuery = ("SELECT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
+   var SelectAverageQuery = ("SELECT Category, AVG(Price) as TotalPrice FROM Expense GROUP BY Category");
     var SelectUserDataQuery = ("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
     var SelectedData = db.Query(SelectAverageQuery);
     var SelectedUserData = db.Query(SelectUserDataQuery);
@@ -27,8 +27,8 @@
     <body>
         <h1>This will do a basic comparison between you and all other users of he site and app.</h1>
         <div>
-            <p><img src="~/Charts/ComparisonChart.cshtml" alt="Expense comparison chart"/> </p>
-             
+            <p></p>
+           <img src="~/Charts/ComparisonChart.cshtml" alt="Expense comparison chart"/>   
 
         </div>
     </body>
