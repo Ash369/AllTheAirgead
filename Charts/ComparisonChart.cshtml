@@ -1,21 +1,48 @@
 ﻿@{
     var CurrentUserId = WebSecurity.CurrentUserId;
     var db = Database.Open("StarterSite");
-   var SelectAverageQuery = ("SELECT UserId, Category, Price FROM Expense");
+    var SelectAverageQuery = ("SELECT UserId, Category, SUM(Price) as TotalPrice FROM Expense GROUP BY Category, UserId");
     var SelectUserDataQuery = ("SELECT Category, SUM(Price) as TotalPrice FROM Expense WHERE UserId = "+ @CurrentUserId + " GROUP BY Category");
+    var SelectCategoriesQuery = ("SELECT CategoryName from Catagories");
     var SelectedData = db.Query(SelectAverageQuery);
     var SelectedUserData = db.Query(SelectUserDataQuery);
+    var SelectedCategoriesData = db.Query(SelectCategoriesQuery);
+    int numUsers = 0, i = 0, MaxUser=0;
 
+    foreach(var row in SelectedData)
+    {
+        if(row.UserId > MaxUser)
+        {
+            numUsers = numUsers + 1;
+            MaxUser = row.UserId;
+        }
+    }
+
+    var AveragePrice = new Dictionary<string, decimal>();
+    foreach(var rowCategories in SelectedCategoriesData)
+        {
+            AveragePrice.Add(rowCategories.CategoryName, 0);
+        } 
+
+
+    foreach(var rowData in SelectedData)
+    {
+        foreach(var rowCategories in SelectedCategoriesData)
+        {
+            if(rowData.Category == rowCategories.CategoryName)
+            {
+                AveragePrice[rowData.Category] = AveragePrice[rowData.Category]+(rowData.TotalPrice/numUsers);
+            }
+        }
+    }
     
-
-
-
+    var AvgPriceArray = AveragePrice.Values.ToArray();
 
     var compChart = new Chart(width: 800, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         compChart=compChart.AddTitle("Comparison");
         compChart = compChart.AddSeries("Average", chartType:"Column",
-            xValue: SelectedData, xField: "Category",
-            yValues: SelectedData, yFields: "TotalPrice");
+            xValue: SelectedCategoriesData, xField: "CategoryName",
+            yValues: AvgPriceArray, yFields: "AvgPriceArray");
             compChart = compChart.AddSeries("User", chartType:"Column",
             xValue: SelectedUserData, xField: "Category",
             yValues: SelectedUserData, yFields: "TotalPrice"); 
