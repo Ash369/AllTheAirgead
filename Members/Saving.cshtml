@@ -5,6 +5,11 @@
     }
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Savings";
+
+
+    var db = Database.Open("StarterSite");
+    var UserId = WebSecurity.CurrentUserId;
+    var selectQueryString = "SELECT Date, Time, Category, ROUND(Price,2) as RoundedPrice, MoreInfo FROM Expense WHERE UserId = " + @UserId + " AND Priority = 3 ORDER BY Date DESC, Time DESC";
 }
 
 <!DOCTYPE html>
@@ -16,5 +21,31 @@
     </head>
     <body>
         
+
+        <table>
+       <thead>
+           <tr>
+               <th>Date</th>
+               <th>Time</th>
+               <th>Category</th>
+               <th>Price</th>
+               <th>More Info</th>
+           </tr>
+       </thead>
+       <tbody>
+           @foreach(var row in db.Query(selectQueryString)){
+            <tr>
+                   <td>@row.Date</td>
+                   <td>@row.Time</td>
+                   <td>@row.Category</td>
+                   <td>@row.RoundedPrice</td>
+                   <td>@row.MoreInfo</td>
+            </tr>
+            }
+       
+
+       
+       </tbody>
+   </table>
     </body>
 </html>

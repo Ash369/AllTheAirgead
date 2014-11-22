@@ -9,7 +9,7 @@
     <ChartArea Name="Default" 
         _Template_="All" 
         BackColor="Transparent" 
-        BackSecondaryColor="White" 
+        BackSecondaryColor="Transparent" 
         BorderColor="64, 64, 64, 64" 
         BorderDashStyle="Solid" 
         ShadowColor="Transparent"> 

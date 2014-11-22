@@ -19,9 +19,11 @@
     }
 
     var AveragePrice = new Dictionary<string, decimal>();
+    var UserPrice = new Dictionary<string, decimal>();
     foreach(var rowCategories in SelectedCategoriesData)
         {
             AveragePrice.Add(rowCategories.CategoryName, 0);
+            UserPrice.Add(rowCategories.CategoryName, 0);
         } 
 
 
@@ -35,8 +37,24 @@
             }
         }
     }
-    
+
+    foreach(var rowData in SelectedData)
+    {
+        foreach(var rowCategories in SelectedCategoriesData)
+        {
+            if(rowData.UserId == CurrentUserId)
+            {
+                if(rowData.Category == rowCategories.CategoryName)
+                {
+                    UserPrice[rowData.Category] = UserPrice[rowData.Category]+(rowData.TotalPrice);
+                }
+            }
+            
+        }
+    }
+
     var AvgPriceArray = AveragePrice.Values.ToArray();
+    var UserPriceArray = UserPrice.Values.ToArray();
 
     var compChart = new Chart(width: 800, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         compChart=compChart.AddTitle("Comparison");
@@ -44,7 +62,7 @@
             xValue: SelectedCategoriesData, xField: "CategoryName",
             yValues: AvgPriceArray, yFields: "AvgPriceArray");
             compChart = compChart.AddSeries("User", chartType:"Column",
-            xValue: SelectedUserData, xField: "Category",
-            yValues: SelectedUserData, yFields: "TotalPrice"); 
+            xValue: SelectedCategoriesData, xField: "CategoryName",
+            yValues: UserPriceArray, yFields: "UserPriceArray"); 
             compChart=compChart.Write();
 }
