@@ -35,6 +35,9 @@ namespace alltheairgeadApp
     {
         private TransitionCollection transitions;
 
+        // Global variable to store expense when navigating to edit page.
+        public Expense ExpenseEditData;
+
         // This MobileServiceClient has been configured to communicate with your local
         // test project for debugging purposes.
         public static MobileServiceClient alltheairgeadClient = new MobileServiceClient(

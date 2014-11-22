@@ -5,8 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
-
-    xmlns:Chart="using:Telerik.UI.Xaml.Controls.Chart"
+    
     x:Class="alltheairgeadApp.PivotPage"
 
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Mode=Self}}"
@@ -87,6 +86,12 @@
                                     Height="{Binding ElementName=PivotItem2, Path=ActualHeight, Mode=OneWay}"
                                     Margin="5,20,5,5"
                                     FlowDirection="LeftToRight">
+                            
+                            <FlyoutBase.AttachedFlyout>
+                                <Flyout x:Name="DataPointPop" Closed="DataPointPop_Closed">
+                                    <StackPanel Name="DataPointInfo" />
+                                </Flyout>
+                            </FlyoutBase.AttachedFlyout>
                             
                             <!-- Hide the legend information -->
                             <charting:Chart.LegendStyle>

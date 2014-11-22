@@ -29,18 +29,36 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <FlyoutBase.AttachedFlyout>
+            <Flyout x:Name="ConfirmDeletePop"  Placement="Bottom">
+                <StackPanel>
+                    <TextBlock FontSize="32" Text="Confirm Delete" Margin="20,10,0,10"/>
+                    <TextBlock FontSize="16" Text="Are you sure you want to delete this expense?"  Margin="30,10,0,10"/>
+                    <Button x:Name="ConfirmDeleteButton" Content="Delete" Margin="30,0,0,10" Click="ConfirmDeleteButton_Click" />
+                </StackPanel>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock x:Uid="Header" Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="{Binding Title}" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,-6.5,0,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+            <TextBlock Text="Edit Expense" FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
         </StackPanel>
 
-        <!-- 
-            TODO: Content should be placed within the following grid 
-                  to show details for the current item
-        -->
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+        <StackPanel Grid.Row="1" Width ="250" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Height="40">
+                <DatePicker x:Name="DateBox" Width="120" Margin="0,-10,5,0"/>
+                <TimePicker x:Name="TimeBox" Width="120" Margin="5,-10,0,0"/>
+            </StackPanel>
+            <ComboBox x:Name="CategoryBox" PlaceholderText="Category" AllowDrop="True" Width="250" ItemsSource="{Binding}"/>
+            <StackPanel Width="250" Orientation="Horizontal" Margin="0,-10,0,-5">
+                <TextBox x:Name="PriceBox" InputScope="Number" TextWrapping="NoWrap" PlaceholderText="€" Width="135" Margin="0,8,5,0" />
+                <ComboBox x:Name="PriorityBox" PlaceholderText="Priority" Width="105" Margin="5,0,0,0" ItemsSource="{Binding}"/>
+            </StackPanel>
+            <TextBox x:Name="MoreInfoBox" Margin="0,5" TextWrapping="Wrap" PlaceholderText="More info..." Width="250"/>
+            <Button x:Name="UpdateButton" Content="Update" Click="UpdateButton_Click" Height="58" Width="75"/>
+            <Button x:Name="DeleteButton" Content="Delete Expense" Click="DeleteButton_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,10"/>
+        </StackPanel>
 
-        </Grid>
     </Grid>
 </Page>

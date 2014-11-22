@@ -168,6 +168,7 @@ namespace alltheairgeadApp
                     {
                         EmailTakenText = new TextBlock();
                         EmailTakenText.Text = "Email address already registered";
+                        EmailTakenText.FontSize = 16;
                         RegisterMessages.Children.Add(EmailTakenText);
                         // Disable the register button
                         RegisterButton.IsEnabled = false;
@@ -186,6 +187,7 @@ namespace alltheairgeadApp
                     // Create text block to display
                     EmailErrorText = new TextBlock();
                     EmailErrorText.Text = "Email Address invalid";
+                    EmailErrorText.FontSize = 16;
                     // Add it to the Stack Panel for registration messages
                     RegisterMessages.Children.Add(EmailErrorText);
                     // Disable the register button if data isn't valid
@@ -221,6 +223,7 @@ namespace alltheairgeadApp
                     // Create the text block
                     PasswordShortText = new TextBlock();
                     PasswordShortText.Text = "Password must be at least 6 characters";
+                    PasswordShortText.FontSize = 16;
                     // Add it to the Stack Panel provided for messages
                     RegisterMessages.Children.Add(PasswordShortText);
                     // Disable the register button if data isn't valid
@@ -255,6 +258,7 @@ namespace alltheairgeadApp
                     // Create the error message
                     PasswordErrorText = new TextBlock();
                     PasswordErrorText.Text = "Passwords do not match";
+                    PasswordErrorText.FontSize = 16;
                     // Add it to the stack panel for display
                     RegisterMessages.Children.Add(PasswordErrorText);
                     // Disable the register button if data isn't valid

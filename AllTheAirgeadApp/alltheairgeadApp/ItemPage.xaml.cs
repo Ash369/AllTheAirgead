@@ -1,20 +1,15 @@
-﻿using alltheairgeadApp.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Windows.Input;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.WindowsAzure.MobileServices;
+using alltheairgeadApp.Common;
+using alltheairgeadApp.DataObjects;
+using alltheairgeadApp.Services;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -28,11 +23,17 @@ namespace alltheairgeadApp
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        Expense Expense;
+        private List<Category> Categories;
+        private static readonly IList<string> PriorityLevels = new ReadOnlyCollection<string>
+            (new List<string> { "High", "Medium", "Low" });
+
         public ItemPage()
         {
             this.InitializeComponent();
 
             this.navigationHelper = new NavigationHelper(this);
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         } 
@@ -66,10 +67,26 @@ namespace alltheairgeadApp
         /// a dictionary of state preserved by this page during an earlier
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
-        {/*
-            // TODO: Create an appropriate data model for your problem domain to replace the sample data.
-            var item = await SampleDataSource.GetItemAsync((string)e.NavigationParameter);
-            this.DefaultViewModel["Item"] = item;*/
+        {
+            // Get the expense to show
+            Expense = (App.Current as App).ExpenseEditData;
+            if (Expense == null)
+            {
+                await new MessageDialog("Expense Data not found").ShowAsync();
+                navigationHelper.GoBack();
+            }
+
+            PriorityBox.DataContext = PriorityLevels;
+
+            // Update the category information
+            await GetCategoryData();
+
+            CategoryBox.SelectedIndex = Categories.FindIndex(a => a.id == Expense.Category);
+            PriceBox.Text = Expense.Price.ToString();
+            PriorityBox.SelectedIndex = (int)Expense.Priority - 1;
+            DateBox.Date = Expense.Date.Date;
+            TimeBox.Time = Expense.Time.TimeOfDay;
+            MoreInfoBox.Text = Expense.MoreInfo;
         }
 
         /// <summary>
@@ -111,5 +128,57 @@ namespace alltheairgeadApp
         }
 
         #endregion
+
+        private async Task GetCategoryData()
+        {
+            List<string> CategoryNames = new List<string>();
+            IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
+            Categories = await CategoryTable.ToListAsync();
+            foreach (Category i in Categories)
+                CategoryNames.Add(i.id);
+            CategoryBox.ItemsSource = CategoryNames;
+        }
+
+        private void DeleteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            ConfirmDeletePop.ShowAt(DeleteButton);
+        }
+
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable Submit to prevent multiple entries
+            UpdateButton.IsEnabled = false;
+
+            if (CategoryBox.SelectedIndex < 0)
+                throw new Exception("Category must be specified");
+            else if (String.IsNullOrWhiteSpace(PriceBox.Text))
+                throw new Exception("Price must be specified");
+            else
+            {
+                Expense NewExpense = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex + 1), MoreInfoBox.Text);
+                if (await ExpenseService.UpdateExpense(Expense, NewExpense))
+                {
+                    // Reenable the update button
+                    UpdateButton.IsEnabled = true;
+                    // Return to the previous page if successful
+                    navigationHelper.GoBack();
+                }
+            }
+
+            // Reenable when finished
+            UpdateButton.IsEnabled = true;
+        }
+
+        private async void ConfirmDeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable the button to prevent multiple presses
+            ConfirmDeleteButton.IsEnabled = false;
+            if (await ExpenseService.DeleteExpense(Expense))
+            {
+                navigationHelper.GoBack();
+            }
+            // Reenable the button after finished
+            ConfirmDeleteButton.IsEnabled = true;
+        }
     }
 }

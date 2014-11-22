@@ -16,6 +16,7 @@ using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 using alltheairgeadApp.DataObjects;
+using Windows.Storage;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -28,6 +29,7 @@ namespace alltheairgeadApp
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
         private List<Category> Categories;
+        private List<Expense> Expenses = new List<Expense>();
         private static readonly IList<string> PriorityLevels = new ReadOnlyCollection<string>
             (new List<string> { "High", "Medium", "Low" });
 
@@ -61,7 +63,8 @@ namespace alltheairgeadApp
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
-            PriorityBox.DataContext = PriorityLevels;
+            //(ExpenseChart.Series[0] as LineSeries).DataPointStyle.Setters.Add(new Setter(LineDataPoint.WidthProperty, 20));
+            //(ExpenseChart.Series[0] as LineSeries).DataPointStyle.Setters.Add(new Setter(LineDataPoint.HeightProperty, 20));
         }
 
         /// <summary>
@@ -94,8 +97,14 @@ namespace alltheairgeadApp
         /// session. The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            await GetCategoryData();
-            await UpdateExpenseChart();
+            PriorityBox.DataContext = PriorityLevels;
+
+            if (Categories == null)
+                await GetCategoryData();
+            if (items.Count == 0)
+                await UpdateExpenseChart();
+            else
+                await RefreshExpenseChart();
         }
 
         /// <summary>
@@ -126,7 +135,7 @@ namespace alltheairgeadApp
         /// </summary>
         /// <param name="e">Provides data for navigation methods and event
         /// handlers that cannot cancel the navigation request.</param>
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);
         }
@@ -153,7 +162,7 @@ namespace alltheairgeadApp
             if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
             {
                 List<NameValueItem> TempItems = new List<NameValueItem>();
-                List<Expense> Expenses;
+                List<Expense> TempExpenses = new List<Expense>();
                 IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
                 var TotalCount = (await ExpenseTable.Take(0).IncludeTotalCount().ToListAsync() as IQueryResultEnumerable<Expense>).TotalCount;
                 if (items.Count >= TotalCount)
@@ -164,16 +173,17 @@ namespace alltheairgeadApp
                 do
                 {
                     MinExpenseDate = MinExpenseDate.AddDays(-7);
-                    Expenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) & (a.Date <= MinExpenseDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
+                    TempExpenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) & (a.Date <= MinExpenseDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
                     weekssearched++;
-                } while (Expenses.Count == 0);
-                if (Expenses.Count != 0)
+                } while (TempExpenses.Count == 0);
+                if (TempExpenses.Count != 0)
                 {
                     ExpenseChart.Width += 750*ChartXScale * weekssearched;
-                    foreach (Expense i in Expenses)
+                    foreach (Expense i in TempExpenses)
                         TempItems.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
 
                     items.AddRange(TempItems);
+                    Expenses.AddRange(TempExpenses);
                     ((LineSeries)ExpenseChart.Series[0]).ItemsSource = items;
                     ((LineSeries)ExpenseChart.Series[0]).IndependentAxis =
                         new DateTimeAxis
@@ -181,7 +191,7 @@ namespace alltheairgeadApp
                             Minimum = MinExpenseDate,
                             Maximum = DateTime.Now,
                             Orientation = AxisOrientation.X,
-                            IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Days : DateTimeIntervalType.Hours
+                            IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days
                             )
 
                         };
@@ -200,7 +210,6 @@ namespace alltheairgeadApp
 
         private async Task RefreshExpenseChart()
         {
-            List<Expense> Expenses;
             IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
             
             items.Clear();
@@ -240,68 +249,90 @@ namespace alltheairgeadApp
 //            if (PriorityBox.SelectedIndex < 0)
 //                PriorityBox.SelectedIndex = PriorityLevels.IndexOf(Categories[CategoryBox.SelectedIndex].DefaultPriority);
         }
-        
-        public void DataPointTapped(Object sender, SelectionChangedEventArgs e)
-        {
-            //IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
-            int Id = ((sender as LineSeries).SelectedItem as NameValueItem).Id;
-            //Expense NewExpense = await ExpenseTable.LookupAsync(Id);
-        }
 
-        public async void ChartScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
-        {
-            if (e.IsIntermediate == false)
-                await UpdateExpenseChart();
-
-        }
-        
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             // Disable Submit to prevent multiple entries
-            string message;
             SubmitButton.IsEnabled = false;
-            ExpenseService ExpenseService = new ExpenseService();
-            try
-            {
-                {
-                    if (CategoryBox.SelectedIndex < 0)
-                        throw new Exception("Category must be specified");
-                    if (new DateTime((DateBox.Date.Date + TimeBox.Time).Ticks) > DateTime.Now)
-                    {
-                        DateBox.Date = DateTime.Now;
-                        TimeBox.Time = DateTime.Now.TimeOfDay;
-                        throw new Exception("Date and time must not be in the future");
-                    }
-                    if (String.IsNullOrWhiteSpace(PriceBox.Text) || Decimal.Parse(PriceBox.Text) < 0)
-                        throw new Exception("Price must be positive");
-                }
 
-                Expense ExpenseData = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex+1), MoreInfoBox.Text);
-                if(await ExpenseService.AddExpense(ExpenseData))
+            if (CategoryBox.SelectedIndex < 0)
+                await new MessageDialog("Category must be specified").ShowAsync();
+            else if (String.IsNullOrWhiteSpace(PriceBox.Text))
+                await new MessageDialog("Price must be specified").ShowAsync();
+            else
+            {
+                Expense ExpenseData = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex + 1), MoreInfoBox.Text);
+                if (await ExpenseService.AddExpense(ExpenseData))
                 {
-                    message = "Expense Saved";
+                    // Clear input data
                     CategoryBox.SelectedIndex = -1;
                     PriceBox.Text = "";
                     DateBox.Date = DateTime.Now;
                     TimeBox.Time = DateTime.Now.TimeOfDay;
                     PriorityBox.SelectedIndex = -1;
                     MoreInfoBox.Text = "";
-                }
-                else
-                {
-                    message = "Saving Failed";
-                }
-            }
-            catch (Exception ex)
-            {
-                message = "Saving Failed\n"+ex.Message;
-            }
-            await new MessageDialog(message).ShowAsync();
 
-            // Refresh the chart with the new data
-            await RefreshExpenseChart();
+                    // Refresh the chart with the new data
+                    await RefreshExpenseChart();
+                }
+            }
             // Reenable when finished
             SubmitButton.IsEnabled = true;
+        }
+        
+        public void DataPointTapped(Object sender, SelectionChangedEventArgs e)
+        {
+            if ((sender as LineSeries).SelectedItem == null)
+                return;
+
+            NameValueItem SelectedItem = (sender as LineSeries).SelectedItem as NameValueItem;
+
+            Expense NewExpense = Expenses.Find(a => a.Id == SelectedItem.Id);
+
+            TextBlock ExpenseHeader = new TextBlock();
+            ExpenseHeader.Text = NewExpense.Category;
+            ExpenseHeader.FontSize = 32;
+            ExpenseHeader.Margin = new Thickness(30, 20, 0, 20);
+
+            TextBlock ExpenseTip = new TextBlock();
+            ExpenseTip.Text = NewExpense.Display();
+            ExpenseTip.FontSize = 20;
+            ExpenseTip.Margin = new Thickness(40, 10, 0, 20);
+
+            Button EditExpenseButton = new Button();
+            EditExpenseButton.Content = "Edit Expense";
+            EditExpenseButton.Click += new RoutedEventHandler(EditExpenseButton_Click);
+            EditExpenseButton.Margin = new Thickness(40, 0, 0, 0);
+
+            DataPointInfo.Children.Add(ExpenseHeader);
+            DataPointInfo.Children.Add(ExpenseTip);
+            DataPointInfo.Children.Add(EditExpenseButton);
+            DataPointPop.ShowAt(sender as LineSeries);
+        }
+
+        private void DataPointPop_Closed(object sender, object e)
+        {
+            DataPointInfo.Children.Clear();
+            (ExpenseChart.Series[0] as LineSeries).SelectedItem = null;
+        }
+
+        private void EditExpenseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Expense NewExpense = Expenses.Find(a => a.Id == ((ExpenseChart.Series[0] as LineSeries).SelectedItem as NameValueItem).Id);
+            // Write data to global variable to pass to new page.
+            (App.Current as App).ExpenseEditData = NewExpense;
+
+            if (!Frame.Navigate(typeof(ItemPage)))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
+        }
+
+        private async void ChartScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (e.IsIntermediate == false)
+                await UpdateExpenseChart();
+
         }
 
         private async void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -326,7 +357,7 @@ namespace alltheairgeadApp
             {
                 if (ChartXScale <= MaxChartXScale && ChartXScale >= MinChartXScale)
                 {
-                    ChartXScale *= e.Delta.Scale;
+                    ChartXScale *= 1.0 + 0.5 * (e.Delta.Scale - 1.0);
                     ExpenseChart.Width = 750 * ChartXScale * ((DateTime.Now.Date - MinExpenseDate).Days / 7);
 
                     if (ChartXScale > ChartXScaleIntervalThresh)
