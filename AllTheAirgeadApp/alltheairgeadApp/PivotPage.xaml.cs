@@ -178,7 +178,12 @@ namespace alltheairgeadApp
                 IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
                 var TotalCount = (await ExpenseTable.Take(0).IncludeTotalCount().ToListAsync() as IQueryResultEnumerable<Expense>).TotalCount;
                 if (items.Count >= TotalCount)
+                {
+                    // Disable the progress wheel and exit
+                    LoginProgress.IsActive = false;
+                    ContentRoot.Children.Remove(LoginProgress);
                     return;
+                }
 
                 // Keep track of how many weeks have been checked in the query
                 int weekssearched = 0;

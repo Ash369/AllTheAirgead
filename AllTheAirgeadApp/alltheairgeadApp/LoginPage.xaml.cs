@@ -9,8 +9,6 @@ using EmailValidation;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 
-// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
-
 namespace alltheairgeadApp
 {
     /// <summary>
