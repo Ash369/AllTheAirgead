@@ -3,8 +3,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Media;
+using Windows.Phone.UI.Input;
 using Windows.ApplicationModel.Resources;
-using Microsoft.WindowsAzure.MobileServices;
 using EmailValidation;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
@@ -34,6 +34,7 @@ namespace alltheairgeadApp
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+            HardwareButtons.BackPressed += this.HardwareButtons_BackPressed;
         }
 
         /// <summary>
@@ -294,6 +295,17 @@ namespace alltheairgeadApp
             }
 
 
+        }
+
+        /// <summary>
+        /// Closes the app when the back button is pressed to avoid going back to a logged in screen
+        /// </summary>
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            // Set the event to handled to prevent bubbling up to higher levels
+            e.Handled = true;
+            // Exit the app
+            App.Current.Exit();
         }
     }
 }

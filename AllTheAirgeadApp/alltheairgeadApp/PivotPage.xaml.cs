@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using Windows.UI.Xaml.Data;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -16,7 +13,6 @@ using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 using alltheairgeadApp.Common;
 using alltheairgeadApp.Services;
 using alltheairgeadApp.DataObjects;
-using Windows.Storage;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
