@@ -149,18 +149,36 @@ namespace alltheairgeadApp
         
         private async Task GetCategoryData()
         {
+            // Display the progress wheel when getting data
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
             List<string> CategoryNames = new List<string>();
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
             Categories = await CategoryTable.ToListAsync();
             foreach (Category i in Categories)
                 CategoryNames.Add(i.id);
             CategoryBox.ItemsSource = CategoryNames;
+
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
         }
 
         private async Task UpdateExpenseChart()
         {
             if (ChartScroll.HorizontalOffset == ChartScroll.ScrollableWidth)
             {
+                // Display the progress wheel when getting data
+                ProgressRing LoginProgress = new ProgressRing();
+                LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+                LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+                ContentRoot.Children.Add(LoginProgress);
+                LoginProgress.IsActive = true;
+
                 List<NameValueItem> TempItems = new List<NameValueItem>();
                 List<Expense> TempExpenses = new List<Expense>();
                 IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
@@ -205,11 +223,21 @@ namespace alltheairgeadApp
                         };
                     ((LineSeries)ExpenseChart.Series[0]).Refresh();
                 }
+                // Disable the progress wheel
+                LoginProgress.IsActive = false;
+                ContentRoot.Children.Remove(LoginProgress);
             }
         }
 
         private async Task RefreshExpenseChart()
         {
+            // Display the progress wheel when getting data
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
             IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
             
             items.Clear();
@@ -218,6 +246,10 @@ namespace alltheairgeadApp
                 items.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
 
             ((LineSeries)ExpenseChart.Series[0]).Refresh();
+
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
         }
 
         /// <summary>
@@ -262,6 +294,14 @@ namespace alltheairgeadApp
             else
             {
                 Expense ExpenseData = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex + 1), MoreInfoBox.Text);
+
+                // Display the progress wheel when getting data
+                ProgressRing LoginProgress = new ProgressRing();
+                LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+                LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+                ContentRoot.Children.Add(LoginProgress);
+                LoginProgress.IsActive = true;
+
                 if (await ExpenseService.AddExpense(ExpenseData))
                 {
                     // Clear input data
@@ -275,6 +315,10 @@ namespace alltheairgeadApp
                     // Refresh the chart with the new data
                     await RefreshExpenseChart();
                 }
+
+                // Disable the progress wheel
+                LoginProgress.IsActive = false;
+                ContentRoot.Children.Remove(LoginProgress);
             }
             // Reenable when finished
             SubmitButton.IsEnabled = true;

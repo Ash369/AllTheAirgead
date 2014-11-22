@@ -131,12 +131,23 @@ namespace alltheairgeadApp
 
         private async Task GetCategoryData()
         {
+            // Display the progress wheel when getting data
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
             List<string> CategoryNames = new List<string>();
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
             Categories = await CategoryTable.ToListAsync();
             foreach (Category i in Categories)
                 CategoryNames.Add(i.id);
             CategoryBox.ItemsSource = CategoryNames;
+
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
         }
 
         private void DeleteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -144,10 +155,41 @@ namespace alltheairgeadApp
             ConfirmDeletePop.ShowAt(DeleteButton);
         }
 
+        private async void ConfirmDeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable the button to prevent multiple presses
+            ConfirmDeleteButton.IsEnabled = false;
+
+            // Display the progress wheel when getting data
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
+            if (await ExpenseService.DeleteExpense(Expense))
+            {
+                navigationHelper.GoBack();
+            }
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
+
+            // Reenable the button after finished
+            ConfirmDeleteButton.IsEnabled = true;
+        }
+
         private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             // Disable Submit to prevent multiple entries
             UpdateButton.IsEnabled = false;
+
+            // Display the progress wheel when getting data
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
 
             if (CategoryBox.SelectedIndex < 0)
                 throw new Exception("Category must be specified");
@@ -164,21 +206,12 @@ namespace alltheairgeadApp
                     navigationHelper.GoBack();
                 }
             }
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
 
             // Reenable when finished
             UpdateButton.IsEnabled = true;
-        }
-
-        private async void ConfirmDeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Disable the button to prevent multiple presses
-            ConfirmDeleteButton.IsEnabled = false;
-            if (await ExpenseService.DeleteExpense(Expense))
-            {
-                navigationHelper.GoBack();
-            }
-            // Reenable the button after finished
-            ConfirmDeleteButton.IsEnabled = true;
         }
     }
 }

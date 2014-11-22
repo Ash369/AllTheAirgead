@@ -19,7 +19,7 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="ContentRoot">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>

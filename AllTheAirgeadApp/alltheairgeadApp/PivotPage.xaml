@@ -27,7 +27,7 @@
         </CommandBar>
     </Page.BottomAppBar>
 
-    <Grid>
+    <Grid x:Name="ContentRoot">
         <Pivot x:Uid="Pivot" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
 
             <Pivot.HeaderTemplate>

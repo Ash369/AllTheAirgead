@@ -114,6 +114,14 @@ namespace alltheairgeadApp
 
             // Login the user and then load data from the mobile service.
             Boolean LoginVerbose = true;
+
+            // Display the progress wheel when logging in
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
             if (await CustomAccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
@@ -121,6 +129,9 @@ namespace alltheairgeadApp
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
             }
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
 
             // Reenable the button to prevent the user from getting stuck for any reason
             LoginButton.IsEnabled = true;
@@ -128,6 +139,16 @@ namespace alltheairgeadApp
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
+            // Disable the button to prevent multiple attempts
+            RegisterButton.IsEnabled = false;
+
+            // Display the progress wheel when regstering
+            ProgressRing LoginProgress = new ProgressRing();
+            LoginProgress.HorizontalAlignment = HorizontalAlignment.Center;
+            LoginProgress.VerticalAlignment = VerticalAlignment.Center;
+            ContentRoot.Children.Add(LoginProgress);
+            LoginProgress.IsActive = true;
+
             if (await CustomAccountService.Register(EmailRegister.Text, PasswordRegister.Password))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
@@ -135,6 +156,12 @@ namespace alltheairgeadApp
                     throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
                 }
             }
+            // Disable the progress wheel
+            LoginProgress.IsActive = false;
+            ContentRoot.Children.Remove(LoginProgress);
+
+            // Reenable the button when finished
+            RegisterButton.IsEnabled = true;
         }
 
         // Called when text in the email registration box is changed. Check that the input is valid and inform the user.
