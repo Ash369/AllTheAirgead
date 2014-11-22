@@ -48,7 +48,7 @@
                         <DatePicker x:Name="DateBox" Width="120" Margin="0,-10,5,0"/>
                         <TimePicker x:Name="TimeBox" Width="120" Margin="5,-10,0,0"/>
                     </StackPanel>
-                    <ComboBox x:Name="CategoryBox" PlaceholderText="Category" AllowDrop="True" Width="250" ItemsSource="{Binding}" SelectionChanged="CategoryBox_SelectionChanged"/>
+                    <ComboBox x:Name="CategoryBox" PlaceholderText="Category" AllowDrop="True" Width="250" ItemsSource="{Binding}" SelectedValuePath="id" DisplayMemberPath="id" SelectionChanged="CategoryBox_SelectionChanged"/>
                     <StackPanel Width="250" Orientation="Horizontal" Margin="0,-10,0,-5">
                         <TextBox x:Name="PriceBox" InputScope="Number" TextWrapping="NoWrap" PlaceholderText="€" Width="135" Margin="0,8,5,0" />
                         <ComboBox x:Name="PriorityBox" PlaceholderText="Priority" Width="105" Margin="5,0,0,0" ItemsSource="{Binding}"/>

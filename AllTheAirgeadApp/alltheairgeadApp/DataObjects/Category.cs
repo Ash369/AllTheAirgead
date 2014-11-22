@@ -10,6 +10,6 @@ namespace alltheairgeadApp.DataObjects
     {
         public string id { get; set; }
 
-        public string DefaultPriority { get; set; }
+        public Byte DefaultPriority { get; set; }
     }
 }

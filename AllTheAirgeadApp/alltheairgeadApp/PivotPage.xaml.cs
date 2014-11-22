@@ -156,12 +156,10 @@ namespace alltheairgeadApp
             ContentRoot.Children.Add(LoginProgress);
             LoginProgress.IsActive = true;
 
-            List<string> CategoryNames = new List<string>();
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
             Categories = await CategoryTable.ToListAsync();
             foreach (Category i in Categories)
-                CategoryNames.Add(i.id);
-            CategoryBox.ItemsSource = CategoryNames;
+            CategoryBox.ItemsSource = Categories;
 
             // Disable the progress wheel
             LoginProgress.IsActive = false;
@@ -253,7 +251,7 @@ namespace alltheairgeadApp
         }
 
         /// <summary>
-        /// Adds an item to the list when the app bar button is clicked.
+        /// Refreshes the Expense chart and category data when the app bar button is pressed.
         /// </summary>
         private async void RefreshAppBarButton_Click(object sender, RoutedEventArgs e)
         {
@@ -275,17 +273,25 @@ namespace alltheairgeadApp
           */
         }
 
+        /// <summary>
+        /// Changes the text displayed in the priority level box to the default for the category when 
+        /// the category is chosen.
+        /// </summary>
         private void CategoryBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // If nothing is selected, set the priority level to the default level for the category
-//            if (PriorityBox.SelectedIndex < 0)
-//                PriorityBox.SelectedIndex = PriorityLevels.IndexOf(Categories[CategoryBox.SelectedIndex].DefaultPriority);
+            if (PriorityBox.SelectedIndex < 0)
+                PriorityBox.PlaceholderText = PriorityLevels[(CategoryBox.SelectedItem as Category).DefaultPriority];
         }
 
+        /// <summary>
+        /// Sends the entered expense to the mobile service when the sibmit button is pressed
+        /// </summary>
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             // Disable Submit to prevent multiple entries
             SubmitButton.IsEnabled = false;
+
+            PriorityBox.SelectedIndex = (CategoryBox.SelectedItem as Category).DefaultPriority;
 
             if (CategoryBox.SelectedIndex < 0)
                 await new MessageDialog("Category must be specified").ShowAsync();
@@ -310,6 +316,7 @@ namespace alltheairgeadApp
                     DateBox.Date = DateTime.Now;
                     TimeBox.Time = DateTime.Now.TimeOfDay;
                     PriorityBox.SelectedIndex = -1;
+                    PriorityBox.PlaceholderText = "Priority";
                     MoreInfoBox.Text = "";
 
                     // Refresh the chart with the new data
@@ -324,6 +331,10 @@ namespace alltheairgeadApp
             SubmitButton.IsEnabled = true;
         }
         
+        /// <summary>
+        /// Opens a popup flyout displaying information about the relevent expense when a data point
+        /// on the chart is tapped
+        /// </summary>
         public void DataPointTapped(Object sender, SelectionChangedEventArgs e)
         {
             if ((sender as LineSeries).SelectedItem == null)
@@ -354,12 +365,18 @@ namespace alltheairgeadApp
             DataPointPop.ShowAt(sender as LineSeries);
         }
 
+        /// <summary>
+        /// Unselects the point and clears the flyout when it is closed
+        /// </summary>
         private void DataPointPop_Closed(object sender, object e)
         {
             DataPointInfo.Children.Clear();
             (ExpenseChart.Series[0] as LineSeries).SelectedItem = null;
         }
 
+        /// <summary>
+        /// Navigates to the edit expense page when the edit expense button is pressed in the flyout
+        /// </summary>
         private void EditExpenseButton_Click(object sender, RoutedEventArgs e)
         {
             Expense NewExpense = Expenses.Find(a => a.Id == ((ExpenseChart.Series[0] as LineSeries).SelectedItem as NameValueItem).Id);
@@ -372,6 +389,9 @@ namespace alltheairgeadApp
             }
         }
 
+        /// <summary>
+        /// Calls the UpdateExpenseChart() method when the scroll viewer reaches the edge of the chart
+        /// </summary>
         private async void ChartScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             if (e.IsIntermediate == false)
@@ -379,6 +399,9 @@ namespace alltheairgeadApp
 
         }
 
+        /// <summary>
+        /// Logs the user out when the logout button is pressed in the app bar menu
+        /// </summary>
         private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             CustomAccountService.Logout();
@@ -393,8 +416,10 @@ namespace alltheairgeadApp
             MessageDialog Dialog = new MessageDialog("Logged out");
             await Dialog.ShowAsync();
         }
-
-        // Called on ManipulationDelta event detected on X axis rectangle. Used to change axis scale easily
+        
+        /// <summary>
+        /// Called on ManipulationDelta event detected on X axis rectangle. Used to change axis scale easily
+        /// </summary>
         private void ChartScroll_ManipulationXDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (Math.Abs(e.Delta.Scale - 1.0) >= 0.01)
@@ -423,6 +448,9 @@ namespace alltheairgeadApp
             ChartScroll.ChangeView(NewPosition, ChartScroll.VerticalOffset, ChartScroll.ZoomFactor, true);
         }
 
+        /// <summary>
+        /// Called on ManipulationDelta event detected on Y axis rectangle. Used to change axis scale easily
+        /// </summary>
         private void ChartScroll_ManipulationYDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (Math.Abs(e.Delta.Scale - 1.0) >= 0.01)
