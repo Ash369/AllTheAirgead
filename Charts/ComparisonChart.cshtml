@@ -64,5 +64,6 @@
             compChart = compChart.AddSeries("User", chartType:"Column",
             xValue: SelectedCategoriesData, xField: "CategoryName",
             yValues: UserPriceArray, yFields: "UserPriceArray"); 
+            compChart = compChart.AddLegend();
             compChart=compChart.Write();
 }

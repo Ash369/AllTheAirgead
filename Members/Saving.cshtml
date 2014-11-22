@@ -9,7 +9,7 @@
 
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
-    var selectQueryString = "SELECT Date, Time, Category, ROUND(Price,2) as RoundedPrice, MoreInfo FROM Expense WHERE UserId = " + @UserId + " AND Priority = 3 ORDER BY Date DESC, Time DESC";
+    var selectQueryString = "SELECT Date, Time, Category, ROUND(Price,2,1) as RoundedPrice, MoreInfo FROM Expense WHERE UserId = " + @UserId + " AND Priority = 3 ORDER BY Date DESC, Time DESC";
 }
 
 <!DOCTYPE html>
