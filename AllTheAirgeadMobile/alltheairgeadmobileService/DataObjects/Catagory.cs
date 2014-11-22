@@ -11,7 +11,6 @@ namespace alltheairgeadmobileService.DataObjects
         [Key]
         public string CategoryName { get; set; }
 
-        [StringLength(50)]
-        public string DefaultPriority { get; set; }
+        public short DefaultPriority { get; set; }
     }
 }
