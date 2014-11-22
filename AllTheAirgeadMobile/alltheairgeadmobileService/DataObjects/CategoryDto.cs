@@ -4,6 +4,6 @@ namespace alltheairgeadmobileService.DataObjects
 {
     public class CategoryDto : EntityData
     {
-        public string DefaultPriority { get; set; }
+        public short DefaultPriority { get; set; }
     }
 }
