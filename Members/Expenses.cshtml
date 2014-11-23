@@ -49,8 +49,8 @@
 <body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date: <input type="date" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()"/></p>
-         <p>Time: <input type="time" name="formTime"  value="@DateTime.Now.ToShortTimeString()"/></p>
+         <p>Date: <input type="date" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()" required/></p>
+         <p>Time: <input type="time" name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
          <p>Category:
              <select name="formCategory">
                  @foreach(var row in @SelectedData)
@@ -65,7 +65,7 @@
                  <option value="2">Medium</option>
                  <option value="1">High</option>
              </select></p>
-         <p>Price: <input type="text" name="formPrice" /></p>
+         <p>Price: <input type="number" name="formPrice" min="0" step="0.01" required/></p>
          <p>More Info: <input type="text" name="formMoreInfo" /></p>
          <p><input type="submit" value="Enter" /></p>
      </form>
