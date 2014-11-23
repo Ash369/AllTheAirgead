@@ -1,15 +1,25 @@
 ﻿@{
-    if (!WebSecurity.IsAuthenticated) {
+    if (!WebSecurity.IsAuthenticated) 
+    {
         Response.Redirect("~/Account/Login?returnUrl="
             + Request.Url.LocalPath);
     }
+
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Savings";
 
-
+    var NewPriority=0;
+    var Name="";
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
-    var selectQueryString = "SELECT Date, Time, Category, ROUND(Price,2,1) as RoundedPrice, MoreInfo FROM Expense WHERE UserId = " + @UserId + " AND Priority = 3 ORDER BY Date DESC, Time DESC";
+    var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + UserId + " AND Priority = 3";
+
+    if(IsPost)
+    {
+         var SQLUPDATE = "UPDATE Catagories SET Priority = " + NewPriority + " WHERE CategoryName='" +Name + "';";
+         db.Execute(SQLUPDATE, NewPriority, Name);
+         Response.Redirect("~/Members/Saving");
+    }
 }
 
 <!DOCTYPE html>
@@ -20,7 +30,8 @@
         <title>Savings</title>
     </head>
     <body>
-        
+        <h3>We base the expenses we recommend you try and avoid to save money on the priority assiged to each individual expense. Using this, we suggest avoiding repeating the below expenses.</h3>
+        <p> You can change the default settings given to each priority by editing the settings below.<br><br><br></p>
 
         <table>
        <thead>
@@ -33,19 +44,21 @@
            </tr>
        </thead>
        <tbody>
-           @foreach(var row in db.Query(selectQueryString)){
+           @{
+               foreach(var row in db.Query(selectQueryString))
+               {
             <tr>
                    <td>@row.Date</td>
                    <td>@row.Time</td>
                    <td>@row.Category</td>
-                   <td>@row.RoundedPrice</td>
+                   <td>@row.Price</td>
                    <td>@row.MoreInfo</td>
             </tr>
+               }
             }
-       
-
-       
        </tbody>
    </table>
+
+
     </body>
 </html>
