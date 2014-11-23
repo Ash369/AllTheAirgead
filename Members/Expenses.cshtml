@@ -13,7 +13,7 @@
      var Category="";
      var Price="";
      var MoreInfo="";
-     var Priority="";
+     var Priority=4;
      
      int UserId;
      UserId= WebSecurity.CurrentUserId;
@@ -27,7 +27,12 @@
          Category=Request["formCategory"];
          Price=Request["formPrice"];
          MoreInfo=Request["formMoreInfo"];
-         Priority=Request["formPriority"];
+         Priority=Convert.ToInt32(Request["formPriority"]);
+
+         if(Priority == 4)
+         {
+             Priority = db1.QueryValue("SELECT DefaultPriority FROM Catagories WHERE CategoryName = '" + Category + "'");
+         }
 
          
          var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, Priority, UserId) VALUES (@0, @1, @2, @3, @4, @5,@6)";
@@ -44,25 +49,20 @@
 <body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date: <input type="date" name="formDate" /></p>
-         <p>Time: <input type="time" name="formTime" /></p>
+         <p>Date: <input type="date" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()"/></p>
+         <p>Time: <input type="time" name="formTime"  value="@DateTime.Now.ToShortTimeString()"/></p>
          <p>Category:
              <select name="formCategory">
                  @foreach(var row in @SelectedData)
                  {
                      <option value="@row.Category">@row.Category</option>
                  }
-                 <option value="Create">Create new category...</option>
              </select></p>
-         @{if(Request["formCategory"]=="Create")
-            {
-                <input type="text" name="formCategory">
-            }
-         }
          <p>Priority:
-             <select name="formPriority">
+             <select name=formPriority>
+                 <option value="4">Default</option>
                  <option value="3">Low</option>
-                 <option value="2" selected >Medium</option>
+                 <option value="2">Medium</option>
                  <option value="1">High</option>
              </select></p>
          <p>Price: <input type="text" name="formPrice" /></p>
