@@ -3,7 +3,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.ApplicationModel.Resources;
+using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Popups;
@@ -30,7 +34,6 @@ namespace alltheairgeadApp
             (new List<string> { "High", "Medium", "Low" });
 
         DateTime MinExpenseDate = DateTime.Now.Date;
-        List<NameValueItem> items = new List<NameValueItem>();
 
         public class NameValueItem
         {
@@ -97,10 +100,11 @@ namespace alltheairgeadApp
 
             if (Categories == null)
                 await GetCategoryData();
-            if (items.Count == 0)
+            if (Expenses.Count == 0)
                 await UpdateExpenseChart();
             else
                 await RefreshExpenseChart();
+            (ExpenseChart.Series[0] as LineSeries).DataPointStyle = StyleService.LargeDataPoint(StyleService.Colours[0]);
         }
 
         /// <summary>
@@ -154,8 +158,53 @@ namespace alltheairgeadApp
 
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
             Categories = await CategoryTable.ToListAsync();
-            foreach (Category i in Categories)
             CategoryBox.ItemsSource = Categories;
+
+            ChartSettings.Items.Clear();
+
+            StackPanel TotalStack = new StackPanel();
+            TotalStack.Orientation = Orientation.Horizontal;
+
+            TextBlock TotalText = new TextBlock();
+            TotalText.Text = "All Expenses";
+            TotalText.FontSize = 24;
+            TotalText.Width = 300;
+            TotalText.Margin = new Thickness(20, 5, 20, 5);
+
+            Rectangle TotalRectangle = new Rectangle();
+            TotalRectangle.Width = 50;
+            TotalRectangle.Height = 10;
+            TotalRectangle.HorizontalAlignment = HorizontalAlignment.Right;
+            TotalRectangle.Margin = new Thickness(20, 5, 20, 5);
+            TotalRectangle.Fill = new SolidColorBrush(Colors.Blue);
+
+            TotalStack.Children.Add(TotalText);
+            TotalStack.Children.Add(TotalRectangle);
+            ChartSettings.Items.Add(TotalStack);
+
+            foreach (Category i in Categories)
+            {
+                StackPanel CategoryStack = new StackPanel();
+                CategoryStack.Orientation = Orientation.Horizontal;
+
+                ToggleSwitch CategoryToggle = new ToggleSwitch();
+                CategoryToggle.OnContent = i.id;
+                CategoryToggle.OffContent = i.id;
+                CategoryToggle.Width = 300;
+                CategoryToggle.Margin = new Thickness(20, 5, 20, 5);
+                CategoryToggle.Toggled += new RoutedEventHandler(CategoryToggle_Toggled);
+
+                Rectangle CategoryRectangle = new Rectangle();
+                CategoryRectangle.Width = 50;
+                CategoryRectangle.Height = 10;
+                CategoryRectangle.HorizontalAlignment = HorizontalAlignment.Right;
+                CategoryRectangle.Margin = new Thickness(20, 5, 20, 5);
+                CategoryRectangle.Fill = new SolidColorBrush(Colors.Gray);
+
+                CategoryStack.Children.Add(CategoryToggle);
+                CategoryStack.Children.Add(CategoryRectangle);
+                ChartSettings.Items.Add(CategoryStack);
+            }
 
             // Disable the progress wheel
             LoginProgress.IsActive = false;
@@ -173,11 +222,11 @@ namespace alltheairgeadApp
                 ContentRoot.Children.Add(LoginProgress);
                 LoginProgress.IsActive = true;
 
-                List<NameValueItem> TempItems = new List<NameValueItem>();
+                //List<NameValueItem> TempItems = new List<NameValueItem>();
                 List<Expense> TempExpenses = new List<Expense>();
                 IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
                 var TotalCount = (await ExpenseTable.Take(0).IncludeTotalCount().ToListAsync() as IQueryResultEnumerable<Expense>).TotalCount;
-                if (items.Count >= TotalCount)
+                if (Expenses.Count >= TotalCount)
                 {
                     // Disable the progress wheel and exit
                     LoginProgress.IsActive = false;
@@ -193,34 +242,67 @@ namespace alltheairgeadApp
                     TempExpenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) & (a.Date <= MinExpenseDate.AddDays(7))).OrderByDescending(a => a.Date).ToListAsync();
                     weekssearched++;
                 } while (TempExpenses.Count == 0);
+
                 if (TempExpenses.Count != 0)
                 {
-                    ExpenseChart.Width += 750*ChartXScale * weekssearched;
-                    foreach (Expense i in TempExpenses)
-                        TempItems.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
-
-                    items.AddRange(TempItems);
                     Expenses.AddRange(TempExpenses);
-                    ((LineSeries)ExpenseChart.Series[0]).ItemsSource = items;
-                    ((LineSeries)ExpenseChart.Series[0]).IndependentAxis =
-                        new DateTimeAxis
-                        {
-                            Minimum = MinExpenseDate,
-                            Maximum = DateTime.Now,
-                            Orientation = AxisOrientation.X,
-                            IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days
-                            )
 
-                        };
-                    ((LineSeries)ExpenseChart.Series[0]).DependentRangeAxis =
-                        new LinearAxis
+                    ExpenseChart.Width += 750*ChartXScale * weekssearched;
+
+                    foreach (LineSeries i in ExpenseChart.Series)
+                    {
+                        // Create temporary series to hold new data for series
+                        List<Expense> SeriesExpenses = new List<Expense>();
+                        List<NameValueItem> TempItems = new List<NameValueItem>();
+                        // Take only the data relevent to the current series
+                        if (i.Name == "TotalExpenses")
+                            SeriesExpenses = TempExpenses;
+                        else
+                            SeriesExpenses = TempExpenses.FindAll(a => a.Category == (string)i.Title);
+
+                        TempItems = (List<NameValueItem>)i.ItemsSource;
+                        if (TempItems == null)
+                            TempItems = new List<NameValueItem>();
+
+                        // Transfer the expense data into a list for displaying
+                        foreach (Expense j in SeriesExpenses)
+                            TempItems.Add(new NameValueItem { Date = (j.Date + j.Time.TimeOfDay), Value = (int)j.Price, Id = j.Id });
+
+                        i.ItemsSource = TempItems;
+
+                        if (ExpenseChart.Series.IndexOf(i) == 0)
                         {
-                            Orientation = AxisOrientation.Y,
-                            ShowGridLines = true,
-                            Location = AxisLocation.Right,
-                            Minimum = 0,
-                        };
-                    ((LineSeries)ExpenseChart.Series[0]).Refresh();
+                            i.IndependentAxis =
+                                new DateTimeAxis
+                                {
+                                    Minimum = MinExpenseDate,
+                                    Maximum = DateTime.Now,
+                                    Location = AxisLocation.Bottom,
+                                    Orientation = AxisOrientation.X,
+                                    IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days),
+                                };
+                            i.DependentRangeAxis =
+                                new LinearAxis
+                                {
+                                    Orientation = AxisOrientation.Y,
+                                    ShowGridLines = true,
+                                    Location = AxisLocation.Right,
+                                    Minimum = 0,
+                                };
+                        }
+                        else
+                        {
+                            Style CategoryYAxisStyle = new Style(typeof(NumericAxisLabel));
+                            Style CategoryXAxisStyle = new Style(typeof(DateTimeAxisLabel));
+                            Setter Hidden = new Setter(VisibilityProperty, Visibility.Collapsed);
+                            CategoryYAxisStyle.Setters.Add(Hidden);
+                            CategoryXAxisStyle.Setters.Add(Hidden);
+
+                            i.IndependentAxis = ((ExpenseChart.Series[0] as LineSeries).IndependentAxis as DateTimeAxis);
+                            i.DependentRangeAxis = ((ExpenseChart.Series[0] as LineSeries).DependentRangeAxis as LinearAxis);
+                        }
+                        i.Refresh();
+                    }
                 }
                 // Disable the progress wheel
                 LoginProgress.IsActive = false;
@@ -238,13 +320,17 @@ namespace alltheairgeadApp
             LoginProgress.IsActive = true;
 
             IMobileServiceTable<Expense> ExpenseTable = App.alltheairgeadClient.GetTable<Expense>();
-            
-            items.Clear();
-            Expenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) && (a.Date <= DateTime.Now)).OrderByDescending(a => a.Date).ToListAsync();
-            foreach (Expense i in Expenses)
-                items.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
 
-            ((LineSeries)ExpenseChart.Series[0]).Refresh();
+            Expenses = await ExpenseTable.Where(a => (a.Date > MinExpenseDate) && (a.Date <= DateTime.Now)).OrderByDescending(a => a.Date).ToListAsync();
+            foreach (LineSeries i in ExpenseChart.Series)
+            {
+                List<NameValueItem> Items = new List<NameValueItem>();
+                foreach (Expense j in Expenses)
+                    Items.Add(new NameValueItem { Date = (j.Date + j.Time.TimeOfDay), Value = (int)j.Price, Id = j.Id });
+
+                i.ItemsSource = Items;
+                i.Refresh();
+            }
 
             // Disable the progress wheel
             LoginProgress.IsActive = false;
@@ -259,19 +345,27 @@ namespace alltheairgeadApp
             await RefreshExpenseChart();
         }
 
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsFlyout.ShowAt(SettingsButton);
+        }
+
         /// <summary>
-        /// Invoked when an item within a section is clicked.
+        /// Logs the user out when the logout button is pressed in the app bar menu
         /// </summary>
-        private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
-        {/*
-            // Navigate to the appropriate destination page, configuring the new page
-            // by passing required information as a navigation parameter
-            var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
-            if (!Frame.Navigate(typeof(ItemPage), itemId))
+        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomAccountService.Logout();
+
+            MinExpenseDate = DateTime.Now.Date;
+            Expenses.Clear();
+            ((LineSeries)ExpenseChart.Series[0]).Refresh();
+            if (!Frame.Navigate(typeof(LoginPage)))
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
-          */
+            MessageDialog Dialog = new MessageDialog("Logged out");
+            await Dialog.ShowAsync();
         }
 
         /// <summary>
@@ -331,7 +425,7 @@ namespace alltheairgeadApp
             // Reenable when finished
             SubmitButton.IsEnabled = true;
         }
-        
+
         /// <summary>
         /// Opens a popup flyout displaying information about the relevent expense when a data point
         /// on the chart is tapped
@@ -399,24 +493,6 @@ namespace alltheairgeadApp
                 await UpdateExpenseChart();
 
         }
-
-        /// <summary>
-        /// Logs the user out when the logout button is pressed in the app bar menu
-        /// </summary>
-        private async void LogoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            CustomAccountService.Logout();
-
-            MinExpenseDate = DateTime.Now.Date;
-            items.Clear();
-            ((LineSeries)ExpenseChart.Series[0]).Refresh();
-            if (!Frame.Navigate(typeof(LoginPage)))
-            {
-                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
-            }
-            MessageDialog Dialog = new MessageDialog("Logged out");
-            await Dialog.ShowAsync();
-        }
         
         /// <summary>
         /// Called on ManipulationDelta event detected on X axis rectangle. Used to change axis scale easily
@@ -482,6 +558,92 @@ namespace alltheairgeadApp
             double NewPosition = ChartScroll.VerticalOffset * ChartYScale + e.Delta.Translation.Y;
             ChartScroll.ChangeView(ChartScroll.HorizontalOffset, NewPosition, ChartScroll.ZoomFactor, true);
         }
-        
+
+        private void CategoryToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            string CategoryName = ((sender as ToggleSwitch).OnContent as string);
+
+            if ((sender as ToggleSwitch).IsOn)
+            {
+
+                List<Expense> TempItems;
+                List<NameValueItem> TempChartData = new List<NameValueItem>();
+                LineSeries CategorySeries = new LineSeries();
+                Binding CategorySeriesIVBinding = new Binding();
+                Binding CategorySeriesDVBinding = new Binding();
+                Style CategoryYAxisStyle = new Style(typeof(NumericAxisLabel));
+                Style CategoryXAxisStyle = new Style(typeof(DateTimeAxisLabel));
+                Setter Hide = new Setter(VisibilityProperty, Visibility.Collapsed);
+
+                CategoryYAxisStyle.Setters.Add(Hide);
+                CategoryXAxisStyle.Setters.Add(Hide);
+
+                CategorySeriesIVBinding.Path = new PropertyPath("Date");
+                CategorySeriesDVBinding.Path = new PropertyPath("Value");
+                //CategorySeriesYMaxBinding.Mode = BindingMode.OneWay;
+
+                if (CategoryName == "Total Expenses")
+                    TempItems = Expenses;
+                else
+                    TempItems = Expenses.FindAll(a => a.Category == CategoryName);
+
+                foreach (Expense i in TempItems)
+                    TempChartData.Add(new NameValueItem { Date = (i.Date + i.Time.TimeOfDay), Value = (int)i.Price, Id = i.Id });
+
+                CategorySeries.Name = CategoryName + "Series";
+                CategorySeries.Title = CategoryName;
+                CategorySeries.ItemsSource = TempChartData;
+                CategorySeries.IndependentValueBinding = CategorySeriesIVBinding;
+                CategorySeries.DependentValueBinding = CategorySeriesDVBinding;
+                CategorySeries.IsSelectionEnabled = true;
+                CategorySeries.SelectionChanged += DataPointTapped;
+                CategorySeries.IndependentAxis = ((ExpenseChart.Series[0] as LineSeries).IndependentAxis as DateTimeAxis);
+                CategorySeries.DependentRangeAxis = ((ExpenseChart.Series[0] as LineSeries).DependentRangeAxis as LinearAxis);
+                CategorySeries.DataPointStyle = StyleService.LargeDataPoint(StyleService.Colours[ExpenseChart.Series.Count]);
+                foreach (StackPanel i in ChartSettings.Items)
+                {
+                    if ((i.Children[0] as ToggleSwitch) == (sender as ToggleSwitch))
+                        (i.Children[1] as Rectangle).Fill = new SolidColorBrush(StyleService.Colours[ExpenseChart.Series.Count]);
+                }
+
+                ExpenseChart.Series.Add(CategorySeries);
+                CategorySeries.Refresh();
+            }
+            else
+            {
+                foreach (LineSeries i in ExpenseChart.Series)
+                {
+                    if ((string)i.Title == CategoryName)
+                    {
+                        ExpenseChart.Series.Remove(i);
+                        break;
+                    }
+                }
+                foreach (StackPanel i in ChartSettings.Items)
+                {
+                    if ((i.Children[0] as ToggleSwitch) == (sender as ToggleSwitch))
+                    {
+                        (i.Children[1] as Rectangle).Fill = new SolidColorBrush(Colors.Gray);
+                        break;
+                    }
+                }
+
+                foreach (LineSeries i in ExpenseChart.Series)
+                {
+                    i.DataPointStyle = StyleService.LargeDataPoint(StyleService.Colours[ExpenseChart.Series.IndexOf(i)]);
+                    foreach (StackPanel j in ChartSettings.Items)
+                    {
+                        if (ChartSettings.Items.IndexOf(j) > 0)
+                        {
+                            if (((j.Children[0] as ToggleSwitch).OnContent as string) == (i.Title as string))
+                            {
+                                (j.Children[1] as Rectangle).Fill = new SolidColorBrush(StyleService.Colours[ExpenseChart.Series.IndexOf(i)]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

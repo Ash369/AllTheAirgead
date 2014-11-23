@@ -10,6 +10,7 @@
 
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Mode=Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -21,14 +22,21 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="LogoutButton" x:Name="LogoutButton" Label="Logout" Click="LogoutButton_Click"/>
+                <AppBarButton x:Uid="LogoutButton" x:Name="LogoutButton" Label="logout" Click="LogoutButton_Click"/>
+                <AppBarButton x:Uid="SettingsButton" x:Name="SettingsButton" Label="chart settings" Click="SettingsButton_Click" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton x:Uid="RefreshAppBarButton" x:Name="RefreshAppBarButton" Label="Refresh" Icon="Refresh" Click="RefreshAppBarButton_Click" />
+            <AppBarButton x:Uid="RefreshAppBarButton" x:Name="RefreshAppBarButton" Label="refresh" Icon="Refresh" Click="RefreshAppBarButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 
     <Grid x:Name="ContentRoot">
-        <Pivot x:Uid="Pivot" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
+        <FlyoutBase.AttachedFlyout>
+            <Flyout x:Name="SettingsFlyout" Placement="Full">
+                <ListView x:Name="ChartSettings" Header="Chart Settings" FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" FontSize="70">
+                </ListView>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+        <Pivot x:Uid="Pivot" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True" >
 
             <Pivot.HeaderTemplate>
                 <DataTemplate>
@@ -80,12 +88,12 @@
                     <Grid FlowDirection="LeftToRight" VerticalAlignment="Bottom">
 
                         <charting:Chart Name="ExpenseChart"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Bottom"
-                                    Width="0"
-                                    Height="{Binding ElementName=PivotItem2, Path=ActualHeight, Mode=OneWay}"
-                                    Margin="5,20,5,5"
-                                    FlowDirection="LeftToRight">
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Width="0"
+                                        Height="{Binding ElementName=PivotItem2, Path=ActualHeight, Mode=OneWay}"
+                                        Margin="5,20,5,5"
+                                        FlowDirection="LeftToRight">
                             
                             <FlyoutBase.AttachedFlyout>
                                 <Flyout x:Name="DataPointPop" Closed="DataPointPop_Closed">

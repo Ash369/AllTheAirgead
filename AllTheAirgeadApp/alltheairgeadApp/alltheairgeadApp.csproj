@@ -119,6 +119,7 @@
     <Compile Include="Services\CustomAccountService.cs" />
     <Compile Include="Services\EmailValidator.cs" />
     <Compile Include="Services\ExpenseService.cs" />
+    <Compile Include="Services\StyleService.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
