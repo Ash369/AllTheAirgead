@@ -14,6 +14,8 @@
 
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Expenses";
+
+    
 }
 
  @{
@@ -87,8 +89,8 @@
 <body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date: <input type="text" id="datepicker" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()" required/></p>
-         <p>Time: <input type="text" id="timepicker"name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
+         <p>Date: <input type="date" name="formDate" required/></p>
+         <p>Time: <input type="time" name="formTime" required/></p>
          <p>Category:
              <select name="formCategory">
                  @foreach(var row in @SelectedData)
