@@ -33,7 +33,9 @@
     </style>
  </head>
  <body>
-       <form action="" method="post">
+   <h1>Charts</h1>
+     @switch(ChartType){
+     case "All": <form action="" method="post">
          <p>Time Span:
              <select name="formChartType">
                  <option value="Day" >Daily</option>
@@ -42,18 +44,51 @@
                  <option value="All" selected>All Expense History</option>
              </select></p>
          <p><input type="submit" value="Enter" /></p>
-     </form>
-   <h1>Charts</h1>
-     @switch(ChartType){
-     case "All":<img src="~/Charts/AllChartData.cshtml" alt="Full expense history chart"/>
+     </form><img src="~/Charts/AllChartData.cshtml" alt="Full expense history chart"/>
         break;
-     case "Year":<img src="~/Charts/YearGraph.cshtml" alt="Yearly expense history chart"/>
+     case "Year":<form action="" method="post">
+         <p>Time Span:
+             <select name="formChartType">
+                 <option value="Day" >Daily</option>
+                 <option value="Month" >Monthly</option>
+                 <option value="Year" selected>Yearly</option>
+                 <option value="All" >All Expense History</option>
+             </select></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form><img src="~/Charts/YearGraph.cshtml" alt="Yearly expense history chart"/>
         break;
-     case "Month":<img src="~/Charts/MonthGraph.cshtml" alt="Monthy expense history chart"/>
+     case "Month":<form action="" method="post">
+         <p>Time Span:
+             <select name="formChartType">
+                 <option value="Day" >Daily</option>
+                 <option value="Month" selected>Monthly</option>
+                 <option value="Year" >Yearly</option>
+                 <option value="All" >All Expense History</option>
+             </select></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form><img src="~/Charts/MonthGraph.cshtml" alt="Monthy expense history chart"/>
         break;
-     case "Day":<img src="~/Charts/DayGraph.cshtml" alt="Daily expense history chart"/>
+     case "Day":<form action="" method="post">
+         <p>Time Span:
+             <select name="formChartType">
+                 <option value="Day" selected>Daily</option>
+                 <option value="Month" >Monthly</option>
+                 <option value="Year" >Yearly</option>
+                 <option value="All" >All Expense History</option>
+             </select></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form><img src="~/Charts/DayGraph.cshtml" alt="Daily expense history chart"/>
         break;
-     default :<img src="~/Charts/AllChartData.cshtml" alt="Full expense history chart"/>
+     default :<form action="" method="post">
+         <p>Time Span:
+             <select name="formChartType">
+                 <option value="Day" >Daily</option>
+                 <option value="Month" >Monthly</option>
+                 <option value="Year" >Yearly</option>
+                 <option value="All" selected>All Expense History</option>
+             </select></p>
+         <p><input type="submit" value="Enter" /></p>
+     </form><img src="~/Charts/AllChartData.cshtml" alt="Full expense history chart"/>
         break;
      }
      
