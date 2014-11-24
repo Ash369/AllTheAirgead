@@ -45,6 +45,7 @@
 
          
          var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, Priority, UserId) VALUES (@0, @1, @2, @3, @4, @5,@6)";
+         
 
          db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, Priority, UserId);
          Response.Redirect("~/Members/Charts");
@@ -69,8 +70,12 @@
     <script type="text/javascript" src="~/Scripts/jquery.plugin.js"></script> 
     <script type="text/javascript" src="~/Scripts/jquery.timeentry.js"></script>
     <script>
-        $("#timepicker").timeEntry({show24Hours: true});
-    </script>
+        $(function() {
+            $("#timepicker").timeEntry({show24Hours: true});
+                    });
+  </script>
+
+    
 
     </header>
 
@@ -83,7 +88,7 @@
      <h1>Add a new expense</h1>
        <form action="" method="post">
          <p>Date: <input type="text" id="datepicker" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()" required/></p>
-         <p>Time: <input type="time" id="timepicker"name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
+         <p>Time: <input type="text" id="timepicker"name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
          <p>Category:
              <select name="formCategory">
                  @foreach(var row in @SelectedData)
