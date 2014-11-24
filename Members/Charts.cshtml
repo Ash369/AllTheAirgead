@@ -36,10 +36,10 @@
        <form action="" method="post">
          <p>Time Span:
              <select name="formChartType">
-                 <option value="Day" selected>Daily</option>
-                 <option value="Month">Monthly</option>
-                 <option value="Year">Yearly</option>
-                 <option value="All">All Expense History</option>
+                 <option value="Day" >Daily</option>
+                 <option value="Month" >Monthly</option>
+                 <option value="Year" >Yearly</option>
+                 <option value="All" selected>All Expense History</option>
              </select></p>
          <p><input type="submit" value="Enter" /></p>
      </form>
@@ -52,6 +52,8 @@
      case "Month":<img src="~/Charts/MonthGraph.cshtml" alt="Monthy expense history chart"/>
         break;
      case "Day":<img src="~/Charts/DayGraph.cshtml" alt="Daily expense history chart"/>
+        break;
+     default :<img src="~/Charts/AllChartData.cshtml" alt="Full expense history chart"/>
         break;
      }
      
