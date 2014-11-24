@@ -3,6 +3,15 @@
         Response.Redirect("~/Account/Login?returnUrl="
             + Request.Url.LocalPath);
     }
+
+    Validation.RequireField("Date", "Date name is required");
+    Validation.RequireField("Time", "Time is required");
+    Validation.RequireField("Price", "Price is required");
+
+    Validation.Add("Date", Validator.DateTime("Date must be a valid date"));
+    Validation.Add("credits", Validator.DateTime("Time must be a valid time"));
+
+
     Layout = "~/_SiteLayout.cshtml";
     Page.Title = "Expenses";
 }
@@ -36,21 +45,50 @@
 
          
          var SQLINSERT = "INSERT INTO Expense (Date, Time, Category, Price, MoreInfo, Priority, UserId) VALUES (@0, @1, @2, @3, @4, @5,@6)";
+         
 
          db1.Execute(SQLINSERT, Date, Time, Category, Price, MoreInfo, Priority, UserId);
          Response.Redirect("~/Members/Charts");
        }
      }
 
+<header>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script>
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
+  </script>
+
+  <!-- From http://keith-wood.name/timeEntry.html -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/Scripts/jquery.timeentry.css"> 
+    <script type="text/javascript" src="~/Scripts/jquery.plugin.js"></script> 
+    <script type="text/javascript" src="~/Scripts/jquery.timeentry.js"></script>
+    <script>
+        $(function() {
+            $("#timepicker").timeEntry({show24Hours: true});
+                    });
+  </script>
+
+    
+
+    </header>
+
 <hgroup class="title">
     <h1>@Page.Title.</h1>
     <h2>This is where you can add a new expense.</h2>
+
 </hgroup>
 <body>
      <h1>Add a new expense</h1>
        <form action="" method="post">
-         <p>Date: <input type="date" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()" required/></p>
-         <p>Time: <input type="time" name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
+         <p>Date: <input type="text" id="datepicker" name="formDate"  value="@DateTime.Now.Date.ToShortDateString()" required/></p>
+         <p>Time: <input type="text" id="timepicker"name="formTime"  value="@DateTime.Now.ToShortTimeString()" required/></p>
          <p>Category:
              <select name="formCategory">
                  @foreach(var row in @SelectedData)
