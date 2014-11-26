@@ -2,13 +2,22 @@
    
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
-    var data = db.Query("SELECT Time, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Day(Date) = Day(getdate())GROUP BY Time");
-    <!--var DinCat = data.Select("Category");-->
+    var data = db.Query("SELECT CAST(Time as Time) [Time], SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Day(Date) = Day(getdate())GROUP BY Time");
+
+    List<string> TimeAxis = new List<string>();
     
+    foreach(var row in data)
+    {
+        TimeAxis.Add(row.Time.ToString());
+
+    }    
+
+
+
     var myChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         myChart=myChart.AddTitle("Daily Costs: ");
         myChart = myChart.AddSeries("Default", chartType:"Line",
-            xValue: data, xField: "Time",
+            xValue: TimeAxis, xField: "TimeAxis",
             yValues: data, yFields: "TotalPrice");
         myChart=myChart.Write(); 
  
