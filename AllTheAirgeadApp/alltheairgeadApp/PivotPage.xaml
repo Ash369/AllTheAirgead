@@ -11,6 +11,7 @@
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Mode=Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <!-- Setup page transitions -->
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -19,6 +20,7 @@
         </TransitionCollection>
     </Page.Transitions>
 
+    <!-- Bottom settings bar for page. Includes a logout settings and refresh button -->
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.SecondaryCommands>
@@ -29,7 +31,9 @@
         </CommandBar>
     </Page.BottomAppBar>
 
+    <!-- Main content root grid -->
     <Grid x:Name="ContentRoot">
+        <!-- Build the flyout for the chart settings -->
         <FlyoutBase.AttachedFlyout>
             <Flyout x:Name="SettingsFlyout" Placement="Full">
                 <ListView x:Name="ChartSettings" Header="Chart Settings" FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" FontSize="70">
@@ -38,6 +42,7 @@
         </FlyoutBase.AttachedFlyout>
         <Pivot x:Uid="Pivot" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True" >
 
+            <!-- Set the pivot header -->
             <Pivot.HeaderTemplate>
                 <DataTemplate>
                     <TextBlock FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" FontSize="70" Text="{Binding}" />
@@ -50,7 +55,7 @@
 				Margin="20,0,20,0"
 				Header="Add Expense"
 				CommonNavigationTransitionInfo.IsStaggerElement="True">
-                <!--Double line list with text wrapping-->
+                <!-- Stack of boxes for expense entry -->
                 <StackPanel Width ="250" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Height="40">
                         <DatePicker x:Name="DateBox" Width="120" Margin="0,-10,5,0"/>
@@ -66,13 +71,13 @@
                 </StackPanel>
             </PivotItem>
 
-            <!--Pivot item two-->
+            <!-- Chart view -->
             <PivotItem
 				x:Name="PivotItem2"
 				x:Uid="PivotItem2"
 				Header="Chart">
 
-                <!--Double line list no text wrapping-->
+                <!-- Scroll viewer for scrolling through chart -->
                 <ScrollViewer Name="ChartScroll"
                               HorizontalScrollMode="Enabled"
                               VerticalScrollMode="Enabled"
@@ -87,6 +92,7 @@
                               ViewChanged="ChartScroll_ViewChanged">
                     <Grid FlowDirection="LeftToRight" VerticalAlignment="Bottom">
 
+                        <!-- Expense Chart -->
                         <charting:Chart Name="ExpenseChart"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
@@ -95,6 +101,7 @@
                                         Margin="5,20,5,5"
                                         FlowDirection="LeftToRight">
                             
+                            <!-- Construct the flyout for when a datapoint is tapped -->
                             <FlyoutBase.AttachedFlyout>
                                 <Flyout x:Name="DataPointPop" Closed="DataPointPop_Closed">
                                     <StackPanel Name="DataPointInfo" />
@@ -108,6 +115,7 @@
                                 </Style>
                             </charting:Chart.LegendStyle>
 
+                            <!-- Add the all expenses series -->
                             <charting:LineSeries
                                 x:Name="TotalExpenses"
                                 Title="Total Expenses"
@@ -117,6 +125,7 @@
                                 SelectionChanged="DataPointTapped">
                             </charting:LineSeries>
                         </charting:Chart>
+                        <!-- Add boxes on the axes to allow manipulation -->
                         <Rectangle
                             x:Name="XAxisBox"
                             VerticalAlignment="Bottom"
@@ -140,11 +149,11 @@
                 </ScrollViewer>
 
             </PivotItem>
-            <!--Pivot item three-->
-            <PivotItem
+            <!-- Daily view. Future stuff -->
+            <!--PivotItem
 				x:Uid="PivotItem3"
 				Margin="0,0,0,0"
-				Header="Daily View"/>
+				Header="Daily View"/-->
 
         </Pivot>
     </Grid>

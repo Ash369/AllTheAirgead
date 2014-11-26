@@ -12,7 +12,7 @@ using alltheairgeadApp.Services;
 namespace alltheairgeadApp
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Login page with pivot for either login or registration 
     /// </summary>
     public sealed partial class LoginPage : Page
     {
@@ -20,11 +20,15 @@ namespace alltheairgeadApp
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
+        // Handles to registration messages
         private TextBlock EmailErrorText;
         private TextBlock EmailTakenText;
         private TextBlock PasswordErrorText;
         private TextBlock PasswordShortText;
 
+        /// <summary>
+        /// Constructor to set up event handles and initialize page components
+        /// </summary>
         public LoginPage()
         {
             this.InitializeComponent();
@@ -106,6 +110,11 @@ namespace alltheairgeadApp
 
         #endregion
 
+        /// <summary>
+        /// Called when the login button is pressed. Sends input data to the mobile sevice to login
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             // Disable the button after press to stop multiple presses
@@ -121,6 +130,7 @@ namespace alltheairgeadApp
             ContentRoot.Children.Add(LoginProgress);
             LoginProgress.IsActive = true;
 
+            // Send the entered email and password to the account service to login
             if (await CustomAccountService.Login(EmailLogin.Text, PasswordLogin.Password, LoginVerbose))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
@@ -136,6 +146,11 @@ namespace alltheairgeadApp
             LoginButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Called when the register button is pressed. Gets input boxes and sends to the mobile service to register
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             // Disable the button to prevent multiple attempts
@@ -148,6 +163,7 @@ namespace alltheairgeadApp
             ContentRoot.Children.Add(LoginProgress);
             LoginProgress.IsActive = true;
 
+            // Send the email and password to the mobile service
             if (await CustomAccountService.Register(EmailRegister.Text, PasswordRegister.Password))
             {
                 if (!Frame.Navigate(typeof(PivotPage)))
@@ -163,7 +179,11 @@ namespace alltheairgeadApp
             RegisterButton.IsEnabled = true;
         }
 
-        // Called when text in the email registration box is changed. Check that the input is valid and inform the user.
+        /// <summary>
+        /// Called when text in the email registration box is changed. Check that the input is valid and inform the user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void EmailRegister_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Check that the email is a valid format
@@ -222,7 +242,11 @@ namespace alltheairgeadApp
             }
         }
 
-        // Called by a change in the password registration box. Check that the password is at least the minimum password length
+        /// <summary>
+        /// Called by a change in the password registration box. Check that the password is at least the minimum password length
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PasswordRegister_PasswordChanged(object sender, RoutedEventArgs e)
         {
             // Check that the password is the required length
@@ -259,7 +283,11 @@ namespace alltheairgeadApp
 
         }
 
-        // Called by a change in the password confirmation field. Check that the two passwords match
+        /// <summary>
+        /// Called by a change in the password confirmation field. Check that the two passwords match
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PasswordConfirmationRegister_PasswordChanged(object sender, RoutedEventArgs e)
         {
             // Check that the passowrds match

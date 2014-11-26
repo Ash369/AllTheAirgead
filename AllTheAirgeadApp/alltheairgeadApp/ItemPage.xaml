@@ -1,4 +1,5 @@
-﻿<Page
+﻿<!-- Page for viewiing anf editing expense data -->
+<Page
     x:Class="alltheairgeadApp.ItemPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,6 +10,7 @@
     mc:Ignorable="d"
     DataContext="{Binding DefaultViewModel.Item, RelativeSource={RelativeSource Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <!-- Set the page transition data -->
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -19,17 +21,20 @@
         </TransitionCollection>
     </Page.Transitions>
 
+    <!-- Root page grid object -->
     <Grid x:Name="ContentRoot">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
+        <!-- Define grid rows -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Popup flyout to confirm a delete -->
         <FlyoutBase.AttachedFlyout>
             <Flyout x:Name="ConfirmDeletePop"  Placement="Bottom">
                 <StackPanel>
@@ -45,6 +50,7 @@
             <TextBlock Text="Edit Expense" FontFamily="/Assets/Fonts/orangejuice.ttf#orange juice" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
         </StackPanel>
 
+        <!-- Main Expense stack. Contains all the expense data in an editable form -->
         <StackPanel Grid.Row="1" Width ="250" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" Height="40">
                 <DatePicker x:Name="DateBox" Width="120" Margin="0,-10,5,0"/>
@@ -56,7 +62,9 @@
                 <ComboBox x:Name="PriorityBox" PlaceholderText="Priority" Width="105" Margin="5,0,0,0" ItemsSource="{Binding}"/>
             </StackPanel>
             <TextBox x:Name="MoreInfoBox" Margin="0,5" TextWrapping="Wrap" PlaceholderText="More info..." Width="250"/>
+            <!-- Save changes button -->
             <Button x:Name="UpdateButton" Content="Update" Click="UpdateButton_Click" Height="58" Width="75"/>
+            <!-- Delete button -->
             <Button x:Name="DeleteButton" Content="Delete Expense" Click="DeleteButton_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,10"/>
         </StackPanel>
 

@@ -103,7 +103,6 @@
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="DataObjects\Account.cs" />
     <Compile Include="DataObjects\Category.cs" />
     <Compile Include="DataObjects\Expense.cs" />
     <Compile Include="ItemPage.xaml.cs">

@@ -28,6 +28,9 @@ namespace alltheairgeadApp
         private static readonly IList<string> PriorityLevels = new ReadOnlyCollection<string>
             (new List<string> { "High", "Medium", "Low" });
 
+        /// <summary>
+        /// Initualizes the item page and sets up load and save event handles
+        /// </summary>
         public ItemPage()
         {
             this.InitializeComponent();
@@ -76,11 +79,13 @@ namespace alltheairgeadApp
                 navigationHelper.GoBack();
             }
 
+            // Set the data context for the priority levels box.
             PriorityBox.DataContext = PriorityLevels;
 
             // Update the category information
             await GetCategoryData();
 
+            // Get the data from the expense to display
             CategoryBox.SelectedIndex = Categories.FindIndex(a => a.id == Expense.Category);
             PriceBox.Text = Expense.Price.ToString();
             PriorityBox.SelectedIndex = (int)Expense.Priority - 1;
@@ -138,9 +143,11 @@ namespace alltheairgeadApp
             ContentRoot.Children.Add(LoginProgress);
             LoginProgress.IsActive = true;
 
+            // Get the list of category names from the database to display in the choice box
             List<string> CategoryNames = new List<string>();
             IMobileServiceTable<Category> CategoryTable = App.alltheairgeadClient.GetTable<Category>();
             Categories = await CategoryTable.ToListAsync();
+            // Add each to a list of names to set as the item source for the box
             foreach (Category i in Categories)
                 CategoryNames.Add(i.id);
             CategoryBox.ItemsSource = CategoryNames;
@@ -150,8 +157,14 @@ namespace alltheairgeadApp
             ContentRoot.Children.Remove(LoginProgress);
         }
 
+        /// <summary>
+        /// Fires on pressing the delete button. Set up in the xaml style sheet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            // Show the confirmation popup
             ConfirmDeletePop.ShowAt(DeleteButton);
         }
 
@@ -191,12 +204,14 @@ namespace alltheairgeadApp
             ContentRoot.Children.Add(LoginProgress);
             LoginProgress.IsActive = true;
 
+            // Check the data is correct
             if (CategoryBox.SelectedIndex < 0)
                 throw new Exception("Category must be specified");
             else if (String.IsNullOrWhiteSpace(PriceBox.Text))
                 throw new Exception("Price must be specified");
             else
             {
+                // Create a new expense from the inputs and call the service to update the expense
                 Expense NewExpense = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex + 1), MoreInfoBox.Text);
                 if (await ExpenseService.UpdateExpense(Expense, NewExpense))
                 {

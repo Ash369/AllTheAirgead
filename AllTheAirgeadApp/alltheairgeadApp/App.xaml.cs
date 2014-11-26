@@ -38,12 +38,8 @@ namespace alltheairgeadApp
         // Global variable to store expense when navigating to edit page.
         public Expense ExpenseEditData;
 
-        // This MobileServiceClient has been configured to communicate with your local
-        // test project for debugging purposes.
+        // Configure mobile service to use azure hosted mobile service
         public static MobileServiceClient alltheairgeadClient = new MobileServiceClient(
-            //"http://localhost:58202",
-            //"http://169.254.80.80:58202",
-            //"http://192.168.1.33:58202",
             "https://alltheairgeadmobile.azure-mobile.net/",
             "lcuZZgCZmiwgIzVWDDuPErwSiBpZqA23"
         );

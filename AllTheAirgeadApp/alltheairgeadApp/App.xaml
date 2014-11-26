@@ -1,4 +1,5 @@
 <Application x:Class="alltheairgeadApp.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"	xmlns:local="using:alltheairgeadApp">
+    <!-- Auto generated -->
     <Application.Resources>
         <ai:TelemetryClient x:Key="ApplicationInsightsBootstrapper" xmlns:ai="using:Microsoft.ApplicationInsights"/>
     </Application.Resources>
