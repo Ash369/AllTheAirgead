@@ -12,7 +12,7 @@
     var Name="";
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
-    var selectQueryString = "SELECT Date, Time, Category, Price, MoreInfo FROM Expense WHERE UserId = " + UserId + " AND Priority = 3";
+    var selectQueryString = "SELECT Cast(Date as Date) [Date], Cast(Time as Time) [Time], Category, CAST(Price as decimal(19,2)) as Price, MoreInfo FROM Expense WHERE UserId = " + UserId + " AND Priority = 3";
 
     if(IsPost)
     {
