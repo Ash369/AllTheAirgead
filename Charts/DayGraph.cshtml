@@ -10,21 +10,14 @@
        TimeAxis.Add(row.Time.ToString());
     } 
 
-    if (!TimeAxis.Any())
-    {
-        <img src="~/Charts/Empty Graph.PNG" alt="Empty Chart"/>   
-    }
-    else
-    {
    
-
         var myChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         myChart=myChart.AddTitle("Daily Costs: ");
-        myChart = myChart.AddSeries("Default", chartType:"Line",
+        myChart = myChart.AddSeries("Default", chartType:"Column",
             xValue: TimeAxis, xField: "TimeAxis",
             yValues: data, yFields: "TotalPrice");
         myChart=myChart.Write(); 
  
-     }
+    
 }
 </html>
