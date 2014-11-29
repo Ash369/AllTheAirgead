@@ -5,6 +5,9 @@ namespace alltheairgeadmobileService.DataObjects
     using System.ComponentModel.DataAnnotations.Schema;
     using Microsoft.WindowsAzure.Mobile.Service.Tables;
 
+    /// <summary>
+    /// Expense data for communicating with database
+    /// </summary>
     [Table("Expense")]
     public partial class Expense
     {
@@ -29,7 +32,8 @@ namespace alltheairgeadmobileService.DataObjects
         public DateTime Time { get; set; }
 
         public short? Priority { get; set; }
-        /*
+
+        /* Used for offline data syncing
         [TableColumn(TableColumnType.Deleted)]
         public bool Deleted { get; set; }
 

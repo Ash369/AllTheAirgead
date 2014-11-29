@@ -30,8 +30,8 @@ namespace alltheairgeadApp.Services
             Setter st1 = new Setter(DataPoint.BackgroundProperty, new SolidColorBrush(Colour));
             Setter st2 = new Setter(DataPoint.BorderBrushProperty, new SolidColorBrush(Colors.White));
             // Set the data point size
-            Setter st3 = new Setter(DataPoint.HeightProperty, 15);
-            Setter st4 = new Setter(DataPoint.WidthProperty, 15);
+            Setter st3 = new Setter(DataPoint.HeightProperty, 17);
+            Setter st4 = new Setter(DataPoint.WidthProperty, 17);
             // Add the setters to the style
             style.Setters.Add(st1); style.Setters.Add(st2); style.Setters.Add(st3); style.Setters.Add(st4);
             return style;

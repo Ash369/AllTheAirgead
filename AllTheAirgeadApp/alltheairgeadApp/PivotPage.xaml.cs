@@ -52,7 +52,7 @@ namespace alltheairgeadApp
 
         // Constants for chart display
         private const double MaxChartXScale = 4.0f;
-        private const double MinChartXScale = 0.1f;
+        private const double MinChartXScale = 1.0f;
         private const double ChartXScaleIntervalThresh = 3.0f;
         private const double MaxChartYScale = 4.0f;
         private const double MinChartYScale = 1.0f;
@@ -319,7 +319,7 @@ namespace alltheairgeadApp
                                 new DateTimeAxis
                                 {
                                     Minimum = MinExpenseDate,
-                                    Maximum = DateTime.Now,
+                                    Maximum = DateTime.Now.AddHours(6),
                                     Location = AxisLocation.Bottom,
                                     Orientation = AxisOrientation.X,
                                     IntervalType = (ChartXScale > ChartXScaleIntervalThresh ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days),
@@ -433,7 +433,7 @@ namespace alltheairgeadApp
         private void CategoryBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (PriorityBox.SelectedIndex < 0)
-                PriorityBox.PlaceholderText = PriorityLevels[(CategoryBox.SelectedItem as Category).DefaultPriority];
+                PriorityBox.PlaceholderText = PriorityLevels[(CategoryBox.SelectedItem as Category).DefaultPriority-1];
         }
 
         /// <summary>
@@ -450,7 +450,10 @@ namespace alltheairgeadApp
                 await new MessageDialog("Price must be specified").ShowAsync();
             else
             {
-                PriorityBox.SelectedIndex = (CategoryBox.SelectedItem as Category).DefaultPriority;
+                // Set the selected priority to the default for the category if not selected
+                if (PriorityBox.SelectedIndex < 0)
+                    PriorityBox.SelectedIndex = (CategoryBox.SelectedItem as Category).DefaultPriority-1;
+                // Create the expense data to save
                 Expense ExpenseData = new Expense(CategoryBox.SelectedValue.ToString(), Decimal.Parse(PriceBox.Text), DateBox.Date, new DateTime(TimeBox.Time.Ticks), (byte?)(PriorityBox.SelectedIndex + 1), MoreInfoBox.Text);
 
                 // Display the progress wheel when getting data
@@ -604,8 +607,8 @@ namespace alltheairgeadApp
             }
 
             // Adjust the position to the allow for dragging in the axis
-            double NewPosition = ChartScroll.HorizontalOffset * ChartXScale + e.Delta.Translation.X;
-            ChartScroll.ChangeView(NewPosition, ChartScroll.VerticalOffset, ChartScroll.ZoomFactor, true);
+            //double NewPosition = ChartScroll.HorizontalOffset * ChartXScale + e.Delta.Translation.X;
+            //ChartScroll.ChangeView(NewPosition, ChartScroll.VerticalOffset, ChartScroll.ZoomFactor, true);
         }
 
         /// <summary>

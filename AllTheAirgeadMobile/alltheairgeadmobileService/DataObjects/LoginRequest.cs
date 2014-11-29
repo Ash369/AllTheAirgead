@@ -2,6 +2,9 @@
 
 namespace alltheairgeadmobileService.DataObjects
 {
+    /// <summary>
+    /// Login request data item. Holds email and password
+    /// </summary>
     public class LoginRequest
     {
         public String Email { get; set; }

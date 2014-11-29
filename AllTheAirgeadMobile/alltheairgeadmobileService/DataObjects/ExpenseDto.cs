@@ -3,6 +3,9 @@ using Microsoft.WindowsAzure.Mobile.Service;
 
 namespace alltheairgeadmobileService.DataObjects
 {
+    /// <summary>
+    /// Expense data object used for communicating with client. Uses Microsoft Entuty Data Framework
+    /// </summary>
     public class ExpenseDto : EntityData
     {
         public int UserId { get; set; }

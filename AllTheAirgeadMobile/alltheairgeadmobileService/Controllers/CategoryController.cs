@@ -10,15 +10,18 @@ using alltheairgeadmobileService.Models;
 
 namespace alltheairgeadmobileService.Controllers
 {
+    // Allow anybody with the application key to get category data. No ability to modify the database is made available
     [AuthorizeLevel(AuthorizationLevel.User)]
     public class CategoryController : TableController<CategoryDto>
     {
+        // Initialize the table controller to accept HTTP requests
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
+            // Setup the connection to the database
             alltheairgeadContext context = new alltheairgeadContext(Services.Settings["ExistingDbConnectionString"]);
 
-            // set DomainManger to a new one that we created
+            // set DomainManger to the new one that we created
             DomainManager = new SimpleMappedEntityDomainManager<CategoryDto, Catagory>(
               context,
               Request,
@@ -37,7 +40,8 @@ namespace alltheairgeadmobileService.Controllers
         {
             return Lookup(id);
         }
-/*      Methods not used for now.
+
+/*      Methods not used for now. May be used later for user added categories
         // PATCH tables/Category/48D68C86-6EA6-4C25-AA33-223FC9A27959
         public Task<CategoryDto> PatchCategory(string id, Delta<CategoryDto> patch)
         {

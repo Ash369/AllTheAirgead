@@ -6,6 +6,9 @@ namespace alltheairgeadmobileService.DataObjects
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
+    /// <summary>
+    /// Category class for communicating with the database database
+    /// </summary>
     public partial class Catagory
     {
         [Key]

@@ -6,6 +6,9 @@ namespace alltheairgeadmobileService.DataObjects
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
+    /// <summary>
+    /// Membership data object used for communicating with the database webpages_Membership table
+    /// </summary>
     public partial class webpages_Membership
     {
         [Key]

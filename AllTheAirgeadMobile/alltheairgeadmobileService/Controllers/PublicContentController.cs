@@ -6,6 +6,7 @@ using Microsoft.WindowsAzure.Mobile.Service.Controllers;
 
 namespace alltheairgeadmobileService.Controllers
 {
+    // Allow the help site to be shown in the browser
     [AuthorizeLevel(AuthorizationLevel.Anonymous)]
     public class PublicContentController : ContentController
     {

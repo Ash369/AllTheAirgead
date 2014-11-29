@@ -3,6 +3,9 @@ namespace alltheairgeadmobileService.DataObjects
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
+    /// <summary>
+    /// User profile data object for communicating with database UserProfile table
+    /// </summary>
     [Table("UserProfile")]
     public partial class UserProfile
     {

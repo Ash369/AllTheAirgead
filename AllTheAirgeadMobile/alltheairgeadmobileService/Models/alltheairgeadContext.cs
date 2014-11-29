@@ -26,8 +26,9 @@ namespace alltheairgeadmobileService.Models
         public alltheairgeadContext(string dbConnectionString)
             : base(dbConnectionString)
         {
-        } 
+        }
 
+        // Database tables
         public System.Data.Entity.DbSet<webpages_Membership> Memberships { get; set; }
         public System.Data.Entity.DbSet<UserProfile> UserProfiles { get; set; }
         public System.Data.Entity.DbSet<Expense> Expenses { get; set; }
@@ -44,7 +45,7 @@ namespace alltheairgeadmobileService.Models
         } 
         */
 
-        // Debugging override to see what caused error in save to database
+        // Debugging override to see what caused error in save to database. Returns full error response
         public override int SaveChanges()
         {
             try
