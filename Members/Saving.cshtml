@@ -46,7 +46,7 @@
            </tr>
        </thead>
        <tbody>
-           @{
+           @{  <!--Writes a row in the table for each row (expense) in the table-->
                foreach(var row in db.Query(selectQueryString))
                {
             <tr>

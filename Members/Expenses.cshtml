@@ -18,6 +18,7 @@
 }
 
  @{
+     <!--Sets up the variables for the insert quesy-->
      var Date="";
      var Time="";
      var Category="";
@@ -33,6 +34,7 @@
 
      var SelectedData = db1.Query(SelectUserCategories);
        if(IsPost){
+           <!--Assigns the values needed for the insert query-->
          Date=Request["formDate"];
          Time=Request["formTime"];
          Category=Request["formCategory"];
@@ -66,19 +68,6 @@
   });
   </script>
 
-  <!-- From http://keith-wood.name/timeEntry.html -->
-<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="~/Scripts/jquery.timeentry.css"> 
-    <script type="text/javascript" src="~/Scripts/jquery.plugin.js"></script> 
-    <script type="text/javascript" src="~/Scripts/jquery.timeentry.js"></script>
-    <script>
-        $(function() {
-            $("#timepicker").timeEntry({show24Hours: true});
-                    });
-  </script> -->  
-
-    
-
     </header>
 
 <hgroup class="title">
@@ -88,6 +77,7 @@
 </hgroup>
 <body>
      <h1>Add a new expense</h1>
+    <!-- Takes in data for a new expense -->
        <form action="" method="post">
          <p>Date: <input type="date" name="formDate" required/></p>
          <p>Time: <input type="time" id="timepicker" name="formTime" required/></p>
