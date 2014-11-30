@@ -4,13 +4,14 @@
     var CurrentUserId = WebSecurity.CurrentUserId;
     var data = db.Query("SELECT CAST(Time as Time) [Time], SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Day(Date) = Day(getdate())GROUP BY Time");
     List<string> TimeAxis = new List<string>();
+    <!--query to get total price of each category seperated and then charted for each day, removes the date from datetime type so only time-->
 
     foreach(var row in data)
     {
        TimeAxis.Add(row.Time.ToString());
     } 
 
-   
+   <!--Sets the x axis as time -->
         var myChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         myChart=myChart.AddTitle("Daily Costs: ");
         myChart = myChart.AddSeries("Default", chartType:"Column",

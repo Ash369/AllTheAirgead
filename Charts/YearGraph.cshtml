@@ -3,7 +3,7 @@
     var db = Database.Open("StarterSite");
     var CurrentUserId = WebSecurity.CurrentUserId;
     var data = db.Query("SELECT Date, SUM(Price) as TotalPrice FROM Expense WHERE UserId = " + @CurrentUserId + "AND Year(Date) = Year(getdate())GROUP BY Date");
-    <!--var DinCat = data.Select("Category");-->
+    <!--query to get total price of each category seperated and then charted for this year -->
     
     var myChart = new Chart(width: 600, height: 400, themePath: "~/Charts/MyChartTheme.xml");
         myChart=myChart.AddTitle("Yearly Costs: ");
