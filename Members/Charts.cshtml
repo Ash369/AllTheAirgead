@@ -8,7 +8,9 @@
     var ChartType="";
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
+    // Query string for geting the user's data for the graph
     var selectQueryString = "SELECT Cast(Date as Date) [Date], Cast(Time as Time) [Time], Category, CAST(Price as decimal(19,2)) as Price, MoreInfo FROM Expense WHERE UserId = " + @UserId + " ORDER BY Date DESC, Time DESC";
+    // Query string for geting the categories for the graph
     var SelectUserCategories = ("SELECT DISTINCT Category FROM Expense, Catagories WHERE UserId = " + @UserId + "SELECT CategoryName FROM Catagories");
 
     Layout = "~/_SiteLayout.cshtml";
@@ -34,7 +36,9 @@
  </head>
  <body>
    <h1>Charts</h1>
+
      @switch(ChartType){
+         <!-- Defines which chart to show based on the drop down -->
      case "All": <form action="" method="post">
          <p>Time Span:
              <select name="formChartType">
