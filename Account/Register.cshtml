@@ -1,5 +1,4 @@
-﻿@* Remove this section if you are using bundling *@
-@section Scripts {
+﻿@section Scripts {
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 }
@@ -31,10 +30,6 @@
         password = Request.Form["password"];
         confirmPassword = Request.Form["confirmPassword"];
 
-        // Validate the user's captcha answer
-        // if (!ReCaptcha.Validate("PRIVATE_KEY")) {
-        //     ModelState.AddError("recaptcha", "Captcha response was not correct");
-        // }
 
         // If all information is valid, create a new account
         if (Validation.IsValid()) {

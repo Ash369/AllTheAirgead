@@ -1,4 +1,5 @@
 ﻿@{
+    <!-- Checks to see if user is logged in-->
     if (!WebSecurity.IsAuthenticated) 
     {
         Response.Redirect("~/Account/Login?returnUrl="
@@ -12,6 +13,7 @@
     var Name="";
     var db = Database.Open("StarterSite");
     var UserId = WebSecurity.CurrentUserId;
+    <!--Selects the low priority expenses-->
     var selectQueryString = "SELECT Cast(Date as Date) [Date], Cast(Time as Time) [Time], Category, CAST(Price as decimal(19,2)) as Price, MoreInfo FROM Expense WHERE UserId = " + UserId + " AND Priority = 3";
 
     if(IsPost)
